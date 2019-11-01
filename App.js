@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Platform, StyleSheet, Text, View, Button, Alert, ScrollView, TouchableOpacity, TextInput} from 'react-native';
-import {Card, ListItem, ThemeConsumer} from "react-native-elements"
+import {Card, ListItem, ThemeConsumer, Divider} from "react-native-elements"
 import axios from "axios"
 import Collapsible from 'react-native-collapsible';
 import Accordion from 'react-native-collapsible/Accordion';
@@ -41,22 +41,14 @@ export default class App extends Component {
   //   )
   // }
 
-  fetchCourses = async (q="") => {
+  fetchCourses = async (q="a") => {
     const courses = await fetch("http://it2810-39.idi.ntnu.no:3001/courses?" + q)
     .then(res => res.json())
     .catch(err => console.log(err))
     // console.log("Type of courses: ", courses.docs)
     this.setState({courses: courses.docs})
-    
-  }
 
-  handlePress (e) {
-    console.log(e.target)
-    // this.setState({
-    //   selectedCard: e.target
-    // })
   }
-    
 
   componentDidMount() {
     this.fetchCourses()
@@ -73,9 +65,12 @@ export default class App extends Component {
         <Card 
           course={course} 
           key={index} 
-          title={course.course_code + " - " + course.norwegian_name} 
-          style={{color: "#3b3f4b"}}
-        />
+          containerStyle={{backgroundColor: "#3b3f4b", borderRadius: 15, borderColor: "#3b3f4b"}}
+        >
+          <Text style={{color: "#FFCE00", fontSize: 20, fontWeight: "bold"}}>
+            {course.course_code + " " + course.norwegian_name}
+          </Text>
+        </Card>
         </TouchableOpacity>
       )
     return courseList
@@ -93,14 +88,13 @@ export default class App extends Component {
     return (
       <View style={styles.container}>
         <Text style={styles.text}>
-          Courses
         </Text>
         <TextInput 
           style={styles.search}
-          placeholder={"Search..."}
+          placeholder={"Search for course code or course name..."}
           onSubmitEditing={(event) => this.handleEnter(event)}
         />
-        <ScrollView>
+        <ScrollView >
           {courseList}
         </ScrollView>
       </View>
@@ -114,7 +108,7 @@ const styles = StyleSheet.create({
     marginTop: "10%",
     // justifyContent: 'center',
     // alignItems: 'center',
-    backgroundColor: '#484D5C',
+    backgroundColor: '#484d5c',
   },
   text: {
     fontSize: 30,
@@ -123,7 +117,7 @@ const styles = StyleSheet.create({
     color: "#FFCE00"
   },
   search: {
-    fontSize: 20,
+    fontSize: 16,
     textAlign: 'center',
     margin: 10,
     height: 40,
@@ -138,7 +132,12 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: "#3b3f4b",
+    flex: 1,
     width: "100%",
-    padding: 0
+    padding: 0,
+    width: "80%",
+  },
+  courseText : {
+    color: "#FFFFFF"
   }
 });
