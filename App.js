@@ -74,7 +74,7 @@ export default class App extends Component {
           course={course} 
           key={index} 
           title={course.course_code + " - " + course.norwegian_name} 
-          style={styles.card}
+          style={{color: "#3b3f4b"}}
         />
         </TouchableOpacity>
       )
@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: "#3b3f4b",
-    color: "#3b3f4b",
-    width: "100%"
+    width: "100%",
+    padding: 0
   }
 });
