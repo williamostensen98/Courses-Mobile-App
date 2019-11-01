@@ -4,6 +4,7 @@ import {Card, ListItem, ThemeConsumer} from "react-native-elements"
 import axios from "axios"
 import Collapsible from 'react-native-collapsible';
 import Accordion from 'react-native-collapsible/Accordion';
+import SearchBar from './components/SearchBar'
 
 
 
@@ -84,9 +85,7 @@ export default class App extends Component {
     
   }
 
-  handleEnter(e) {
-    this.fetchCourses(e.nativeEvent.text)
-  }
+  
 
   render() {
     let courseList = this.mapCoursesToCard()
@@ -95,11 +94,7 @@ export default class App extends Component {
         <Text style={styles.text}>
           Courses
         </Text>
-        <TextInput 
-          style={styles.search}
-          placeholder={"Search..."}
-          onSubmitEditing={(event) => this.handleEnter(event)}
-        />
+        <SearchBar fetchCourses={this.fetchCourses}/>
         <ScrollView>
           {courseList}
         </ScrollView>
@@ -113,7 +108,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: "10%",
     // justifyContent: 'center',
-    // alignItems: 'center',
+    alignItems: 'center',
     backgroundColor: '#484D5C',
   },
   text: {
@@ -121,15 +116,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     margin: 10,
     color: "#FFCE00"
-  },
-  search: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-    height: 40,
-    color: "#000000",
-    backgroundColor: "#FFFFFF",
-    borderRadius: 10
   },
   instructions: {
     textAlign: 'center',
