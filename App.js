@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { Platform, StyleSheet, Text, View, Button, Alert, ScrollView, TouchableOpacity} from 'react-native';
+import { Platform, StyleSheet, Text, View, Button, Alert, ScrollView, TouchableOpacity, TextInput} from 'react-native';
 import {Card, ListItem, ThemeConsumer} from "react-native-elements"
 import axios from "axios"
 import Collapsible from 'react-native-collapsible';
 import Accordion from 'react-native-collapsible/Accordion';
+
 
 
 
@@ -40,7 +41,7 @@ export default class App extends Component {
   //   )
   // }
 
-  fetchCourses = async (q="TDT") => {
+  fetchCourses = async (q="") => {
     const courses = await fetch("http://it2810-39.idi.ntnu.no:3001/courses?" + q)
     .then(res => res.json())
     .catch(err => console.log(err))
@@ -83,6 +84,10 @@ export default class App extends Component {
     
   }
 
+  handleEnter(e) {
+    this.fetchCourses(e.nativeEvent.text)
+  }
+
   render() {
     let courseList = this.mapCoursesToCard()
     return (
@@ -90,6 +95,11 @@ export default class App extends Component {
         <Text style={styles.text}>
           Courses
         </Text>
+        <TextInput 
+          style={styles.search}
+          placeholder={"Search..."}
+          onSubmitEditing={(event) => this.handleEnter(event)}
+        />
         <ScrollView>
           {courseList}
         </ScrollView>
@@ -111,6 +121,15 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     margin: 10,
     color: "#FFCE00"
+  },
+  search: {
+    fontSize: 20,
+    textAlign: 'center',
+    margin: 10,
+    height: 40,
+    color: "#000000",
+    backgroundColor: "#FFFFFF",
+    borderRadius: 10
   },
   instructions: {
     textAlign: 'center',
