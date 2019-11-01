@@ -1,5 +1,11 @@
 import React, { Component } from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet, Text, View, Button, Alert, ScrollView, TouchableOpacity} from 'react-native';
+import {Card, ListItem, ThemeConsumer} from "react-native-elements"
+import axios from "axios"
+import Collapsible from 'react-native-collapsible';
+import Accordion from 'react-native-collapsible/Accordion';
+
+
 
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
@@ -7,12 +13,86 @@ const instructions = Platform.select({
 });
 
 export default class App extends Component {
+
+  state = {
+    courses: null,
+    yOffset: null,
+    xOffset: null,
+    selectedCard: null,
+    isCollapsed: false,
+  }
+  // ### TEST METHOD ###
+  // handlePress = () => {
+  //   Alert.alert(
+  //     'You pressed a button!',
+  //     'This is a secret',
+  //     [
+  //       {text: 'Jenny YU is a KU', onPress: () => console.log('EN KU')},
+  //       {
+  //         text: 'Cancel',
+  //         onPress: () => console.log('Cancel Pressed'),
+  //         style: 'cancel',
+  //       },
+  //       {text: 'OK', onPress: () => console.log('OK Pressed')},
+
+  //     ],
+  //     {cancelable: false}
+  //   )
+  // }
+
+  fetchCourses = async (q="TDT") => {
+    const courses = await fetch("http://it2810-39.idi.ntnu.no:3001/courses?" + q)
+    .then(res => res.json())
+    .catch(err => console.log(err))
+    // console.log("Type of courses: ", courses.docs)
+    this.setState({courses: courses.docs})
+    
+  }
+
+  handlePress (e) {
+    console.log(e.target)
+    // this.setState({
+    //   selectedCard: e.target
+    // })
+  }
+    
+
+  componentDidMount() {
+    this.fetchCourses()
+    
+  }
+  componentDidUpdate() {
+
+  }
+
+  mapCoursesToCard() {
+    if (this.state.courses != null) {
+      let courseList = this.state.courses.map((course, index) => 
+      <TouchableOpacity key={index} onPress={() => console.log("MØØØøøØøø JENnY!")} style={styles.courseContainer}>
+        <Card 
+          course={course} 
+          key={index} 
+          title={course.course_code + " - " + course.norwegian_name} 
+          style={styles.card}
+        />
+        </TouchableOpacity>
+      )
+    return courseList
+    }
+    return null
+    
+  }
+
   render() {
+    let courseList = this.mapCoursesToCard()
     return (
       <View style={styles.container}>
-        <Text style={styles.welcome}>Welcome to React Native!</Text>
-        <Text style={styles.instructions}>To get started, edit App.js</Text>
-        <Text style={styles.instructions}>{instructions}</Text>
+        <Text style={styles.text}>
+          Courses
+        </Text>
+        <ScrollView>
+          {courseList}
+        </ScrollView>
       </View>
     );
   }
@@ -21,18 +101,25 @@ export default class App extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
+    marginTop: "10%",
+    // justifyContent: 'center',
+    // alignItems: 'center',
+    backgroundColor: '#484D5C',
   },
-  welcome: {
-    fontSize: 20,
+  text: {
+    fontSize: 30,
     textAlign: 'center',
     margin: 10,
+    color: "#FFCE00"
   },
   instructions: {
     textAlign: 'center',
     color: '#333333',
     marginBottom: 5,
   },
+  card: {
+    backgroundColor: "#3b3f4b",
+    color: "#3b3f4b",
+    width: "100%"
+  }
 });
