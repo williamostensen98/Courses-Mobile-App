@@ -17,11 +17,14 @@ const instructions = Platform.select({
 export default class App extends Component {
 
   state = {
+    query: '',
     courses: null,
     yOffset: null,
     xOffset: null,
     selectedCard: null,
     isCollapsed: false,
+    limit: 10,
+    total: 0
   }
   // ### TEST METHOD ###
   // handlePress = () => {
@@ -47,13 +50,22 @@ export default class App extends Component {
     .then(res => res.json())
     .catch(err => console.log(err))
     // console.log("Type of courses: ", courses.docs)
-    this.setState({courses: courses.docs})
-
+    this.setState({
+      courses: courses.docs, 
+      limit: courses.limit,
+      total: courses.total,
+    })
   }
+
+  setQuery = q => {
+    this.setState({
+      query: q
+    })
+  }
+
 
   componentDidMount() {
     this.fetchCourses()
-    
   }
   componentDidUpdate() {
 
@@ -62,11 +74,14 @@ export default class App extends Component {
   mapCoursesToCard() {
     if (this.state.courses != null) {
       let courseList = this.state.courses.map((course, index) => 
-      <TouchableOpacity key={index} onPress={() => console.log("MØØØøøØøø JENnY!")} style={styles.courseContainer}>
+      <TouchableOpacity key={index} onPress={() => console.log("MØØØøøØøø JENnY!")} style={{width: 400}}>
         <Card 
           course={course} 
           key={index} 
-          containerStyle={{backgroundColor: "#3b3f4b", borderRadius: 15, borderColor: "#3b3f4b"}}
+          containerStyle={{backgroundColor: "#3b3f4b", 
+                           borderRadius: 15, 
+                           borderColor: "#3b3f4b"}
+                          }
         >
           <Text style={{color: "#FFCE00", fontSize: 20, fontWeight: "bold"}}>
             {course.course_code + " " + course.norwegian_name}
@@ -80,6 +95,19 @@ export default class App extends Component {
     
   }
 
+  handleScroll = nativeEvent => {
+    if (this.isCloseToBottom(nativeEvent) && (this.state.limit < this.state.total)) {       
+      this.setState(
+        prevState => ({limit: prevState.limit+=10}))
+        this.fetchCourses(this.state.query+'&limit='+this.state.limit)
+    }
+  }
+  
+
+
+  isCloseToBottom({ layoutMeasurement, contentOffset, contentSize }) {   
+    return layoutMeasurement.height + contentOffset.y >= contentSize.height - 50;
+  }
   
 
   render() {
@@ -88,9 +116,13 @@ export default class App extends Component {
       <View style={styles.container}>
         <Text style={styles.text}>
         </Text>
-        <SearchBar fetchCourses={this.fetchCourses}/>
-        <ScrollView>
-          {courseList}
+        <SearchBar fetchCourses={this.fetchCourses} setQuery={this.setQuery}/>
+        <ScrollView 
+          scrollEventThrottle={16}
+          onScroll={({nativeEvent}) => this.handleScroll(nativeEvent)}
+          styles={{alignItems: 'center'}}
+        >
+            {this.mapCoursesToCard()}
         </ScrollView>
       </View>
     );
@@ -121,7 +153,7 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     padding: 0,
-    width: "80%",
+
   },
   courseText : {
     color: "#FFFFFF"
