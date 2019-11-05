@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { View, Text, StyleSheet, Button, ScrollView, TouchableOpacity} from 'react-native';
+import { View, Text, StyleSheet, Button, ScrollView, TouchableOpacity, AsyncStorage} from 'react-native';
 import {Card} from "react-native-elements"
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
@@ -15,7 +15,10 @@ export class HomeScreen extends Component {
         query: '',
         courses: null,
         limit: 10,
-        total: 0
+        total: 0,
+        searchHistory: [],
+        mappedHistory: '',
+        defaultText: null,
       }
     
       fetchCourses = async (q="") => {
@@ -39,8 +42,9 @@ export class HomeScreen extends Component {
     
       componentDidMount() {
         this.fetchCourses()
+        this.retrieveHistory()
       }
-    
+
       mapCoursesToCard() {
         if (this.state.courses != null) {
           let courseList = this.state.courses.map((course, index) => 
@@ -73,29 +77,99 @@ export class HomeScreen extends Component {
         }
       }
       
-    
-    
       isCloseToBottom({ layoutMeasurement, contentOffset, contentSize }) {   
         return layoutMeasurement.height + contentOffset.y >= contentSize.height - 50;
       }
     
+
+    retrieveHistory = async () =>{
+      // Query local history
+      AsyncStorage.getItem("searchHistory").then(history => JSON.parse(history))
+        .then(history => {
+          (history == null) ? 
+                this.setState({searchHistory: []}) : this.setState({searchHistory: history})
+                console.log("SEARCH HISTORY:", this.state.searchHistory)
+                this.mapHistory()
+          }
+
+      )
+    }
+    // save the search tag
+    storeSearch = async (text) => {
+          if(text!=='') {
+            let tempArr = this.state.searchHistory;
+            tempArr.unshift(text);
+            tempArr = JSON.stringify(tempArr)
+            await AsyncStorage.setItem("searchHistory", tempArr)
+            this.setState({defaultText: null})
+            console.log("STORED", text)
+        }
+        else{
+          this.retrieveHistory()
+        }
+    }
+
+    clearHistory = () => {
+      try {
+         AsyncStorage.clear()
+         console.log("CLEARED")
+         this.setState({searchHistory: [],
+                        mappedHistory: '', 
+                        defaultText: <Text style={styles.search}>Search history cleared!</Text>
+                      })
+      }
+      catch(error){
+        console.log(error)
+      }
+    }
+
+    mapHistory = () => {
+      this.setState({mappedHistory: this.state.searchHistory
+                      .map((search, index) => 
+                      <Button key={index}
+                          color='#FFFFFF'
+                          title={search}
+                          onPress={() => this.fetchCourses(search).then(this.setQuery(search))}
+                      />)
+      }) 
+    }
+
+      showHistory = () => {
+
+        return (
+        <View>
+          <Text style={{fontWeight: 'bold', fontSize: 20, color: '#FFFFFF'}}>
+            Search history:
+          </Text>
+          {this.state.mappedHistory}
+          <Button color='#FFCE00' title={"Clear search history"} onPress={() => this.clearHistory()}/>
+        </View>
+      )
+    }
+      
+      
+
       
 
   render() {
+ 
     return (
       <View style={styles.container}>
         <Text style={styles.text}>
         </Text>
-        <SearchBar fetchCourses={this.fetchCourses} setQuery={this.setQuery}/>
+        <SearchBar fetchCourses={this.fetchCourses} 
+                   setQuery={this.setQuery}
+                   storeSearch={this.storeSearch}/>
         <ScrollView scrollEventThrottle={16} 
                     onScroll={({nativeEvent}) => this.handleScroll(nativeEvent)} 
                     contentContainerStyle={{alignItems: 'center', justifyContent: "space-between"}} >
 
-            {this.mapCoursesToCard()}
+            {this.state.query===''? ((this.state.mappedHistory.length>0)? this.showHistory() : this.state.defaultText) 
+                                  : this.mapCoursesToCard()}
 
         </ScrollView>
       </View>
-    );
+    ); 
   }
 }
 
@@ -125,6 +199,11 @@ const styles = StyleSheet.create({
     },
     courseText : {
       color: "#FFFFFF"
+    },
+    search: {
+      color: "#FFFFFF",
+      fontSize: 18,
+
     }
   });
 
