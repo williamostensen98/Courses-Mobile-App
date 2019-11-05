@@ -4,7 +4,7 @@ import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 
 
-class Course extends Component {
+class CourseScreen extends Component {
 
     static navigationOptions = {
         header: null  
@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
 
 const AppNavigator = createStackNavigator({
     Home: {
-        screen: Course,
+        screen: CourseScreen,
     },
 });
   
