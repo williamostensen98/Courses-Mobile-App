@@ -50,7 +50,7 @@ export class HomeScreen extends Component {
             <Card 
               course={course} 
               key={index} 
-              // style={{width: "80%"}}
+              style={{width: "80%"}}
               containerStyle={{backgroundColor: "#3b3f4b", borderRadius: 15, borderColor: "#3b3f4b"}}
             >
               <Text style={{color: "#FFCE00", fontSize: 20, fontWeight: "bold"}}>
