@@ -1,7 +1,9 @@
 import React, { Component } from 'react'
-import {View, Text, StyleSheet, ScrollView} from "react-native";
+import {View, Text, StyleSheet, ScrollView, Button} from "react-native";
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
+import Hr from "react-native-hr-component";
+
 
 
 class CourseScreen extends Component {
@@ -10,12 +12,48 @@ class CourseScreen extends Component {
         header: null  
     };
 
+    averageDifficulty() {
+      const course = this.props.navigation.getParam('course')
+      let length = course.difficulty.length;
+      if (length > 0) {
+        
+        let total = course.difficulty.reduce((total, num) => total + num, 0)
+        return (total/length).toFixed(2) + "/5"
+      }
+      return "No reviews yet"
+      
+    }
+
 
     render() {
         const course = this.props.navigation.getParam('course')
         return(
         <ScrollView contentContainerStyle={styles.container}>
-            <Text style={styles.text}> {course.course_code} {course.norwegian_name} </Text>
+            <Text style={styles.headline}> {course.norwegian_name} </Text>
+            <Hr 
+              text={" " + course.course_code + " "}
+              textStyles={{color: "#C0CCD8", fontSize: 16}}
+              lineColor={"#C0CCD8"}
+            />
+            <Text style={styles.text}>
+              <Text style={{fontWeight: "bold"}}>
+                Credits: {""}
+              </Text>
+               {course.credits +"\n"} 
+               <Text style={{fontWeight: "bold"}}>
+                Taught in: {""}
+               </Text>
+               {course.taught_in_autumn & course.taught_in_spring? "Fall & Spring \n" : course.taught_in_autumn ? "Fall \n" : "Spring \n"}
+               <Text style={{fontWeight: "bold"}}>
+                Average difficulty: {""}
+               </Text>
+               {(this.averageDifficulty()) + "\n"}
+               <Text style={{fontWeight: "bold"}}>
+                Content: {""}
+               </Text>
+               {course.content}
+            </Text>
+
         </ScrollView>
         )
     }
@@ -24,15 +62,22 @@ class CourseScreen extends Component {
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: '#484D5C',
+      // justifyContent: 'center',
+      // alignItems: 'center',
+      backgroundColor: '#3b3f4b',
     },
-    text: {
+    headline: {
       fontSize: 30,
       textAlign: 'center',
-      margin: 10,
+      fontWeight: "bold",
+      margin: 15,
       color: "#FFCE00"
+    },
+    text: {
+      color: "#C0CCD8",
+      fontSize: 20,
+      margin: 10
+
     },
     instructions: {
       textAlign: 'center',

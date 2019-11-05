@@ -18,7 +18,7 @@ export class HomeScreen extends Component {
         total: 0
       }
     
-      fetchCourses = async (q="") => {
+      fetchCourses = async (q="TDT") => {
         const courses = await fetch("http://it2810-39.idi.ntnu.no:3001/courses?" + q)
         .then(res => res.json())
         .catch(err => console.log(err))
