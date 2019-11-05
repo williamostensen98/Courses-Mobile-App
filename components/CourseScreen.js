@@ -6,10 +6,10 @@ import Hr from "react-native-hr-component";
 
 
 
-class CourseScreen extends Component {
+export default class CourseScreen extends Component {
 
     static navigationOptions = {
-        header: null  
+      
     };
 
     averageDifficulty() {
@@ -28,43 +28,46 @@ class CourseScreen extends Component {
     render() {
         const course = this.props.navigation.getParam('course')
         return(
-        <ScrollView contentContainerStyle={styles.container}>
-            <Text style={styles.headline}> {course.norwegian_name} </Text>
-            <Hr 
-              text={" " + course.course_code + " "}
-              textStyles={{color: "#C0CCD8", fontSize: 16}}
-              lineColor={"#C0CCD8"}
-            />
-            <Text style={styles.text}>
-              <Text style={{fontWeight: "bold"}}>
-                Credits: {""}
+          <View style={styles.container}>
+          <ScrollView >
+              <Text style={styles.headline}> {course.norwegian_name} </Text>
+              <Hr 
+                text={" " + course.course_code + " "}
+                textStyles={{color: "#C0CCD8", fontSize: 16}}
+                lineColor={"#C0CCD8"}
+              />
+              <Text style={styles.text}>
+                <Text style={{fontWeight: "bold"}}>
+                  Credits: {""}
+                </Text>
+                {course.credits +"\n"} 
+                <Text style={{fontWeight: "bold"}}>
+                  Taught in: {""}
+                </Text>
+                {course.taught_in_autumn & course.taught_in_spring? "Fall & Spring \n" : course.taught_in_autumn ? "Fall \n" : "Spring \n"}
+                
+                <Text style={{fontWeight: "bold"}}>
+                  Content: {""}
+                </Text>
+                {course.content + "\n"}
+                <Text style={{fontWeight: "bold"}}>
+                  Average difficulty: {""}
+                </Text>
+                {(this.averageDifficulty()) + "\n"}
               </Text>
-               {course.credits +"\n"} 
-               <Text style={{fontWeight: "bold"}}>
-                Taught in: {""}
-               </Text>
-               {course.taught_in_autumn & course.taught_in_spring? "Fall & Spring \n" : course.taught_in_autumn ? "Fall \n" : "Spring \n"}
-               <Text style={{fontWeight: "bold"}}>
-                Average difficulty: {""}
-               </Text>
-               {(this.averageDifficulty()) + "\n"}
-               <Text style={{fontWeight: "bold"}}>
-                Content: {""}
-               </Text>
-               {course.content}
-            </Text>
 
-        </ScrollView>
+          </ScrollView>
+        </View>
         )
     }
 }
 
 const styles = StyleSheet.create({
     container: {
-      flex: 1,
       // justifyContent: 'center',
       // alignItems: 'center',
       backgroundColor: '#3b3f4b',
+      flexGrow: 1,
     },
     headline: {
       fontSize: 30,
@@ -94,14 +97,4 @@ const styles = StyleSheet.create({
       color: "#FFFFFF"
     }
   });
-
-const AppNavigator = createStackNavigator({
-    Home: {
-        screen: CourseScreen,
-    },
-});
-  
-
-export default createAppContainer(AppNavigator);
-
 

@@ -1,24 +1,27 @@
 import React, {Component} from 'react';
-import { View, Text, StyleSheet, Button, ScrollView, TouchableOpacity} from 'react-native';
+import { View, Text, StyleSheet, Button, ScrollView, TouchableOpacity, Header} from 'react-native';
 import {Card} from "react-native-elements"
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import SearchBar from './SearchBar';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
-export class HomeScreen extends Component {
+
+export default class HomeScreen extends Component {
    
     static navigationOptions = {
-        header: null
+      
       };
 
     state = {
         query: '',
         courses: null,
         limit: 10,
-        total: 0
+        total: 0,
+        hasSearched: false,
       }
     
-      fetchCourses = async (q="TDT") => {
+      fetchCourses = async (q="") => {
         const courses = await fetch("http://it2810-39.idi.ntnu.no:3001/courses?" + q)
         .then(res => res.json())
         .catch(err => console.log(err))
@@ -27,6 +30,7 @@ export class HomeScreen extends Component {
           courses: courses.docs, 
           limit: courses.limit,
           total: courses.total,
+          hasSearched: true
         })
       }
     
@@ -84,14 +88,24 @@ export class HomeScreen extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.text}>
-        </Text>
-        <SearchBar fetchCourses={this.fetchCourses} setQuery={this.setQuery}/>
-        <ScrollView scrollEventThrottle={16} 
-                    onScroll={({nativeEvent}) => this.handleScroll(nativeEvent)} 
-                    contentContainerStyle={{alignItems: 'center', justifyContent: "space-between"}} >
-
-            {this.mapCoursesToCard()}
+        <View style={styles.searchContainer}>
+          <View style={{flexDirection: "row"}}>
+          <Icon name="bar-chart" size={35} color={"#FFCE00"}/> 
+          <Text h1 style={styles.header}>
+          {""}Courses
+          </Text>
+          </View>
+          <Text style={styles.searchText}>
+             SEARCH FOR COURSE NAMES OR CODES...
+          </Text>
+           <SearchBar style={styles.searchbar} fetchCourses={this.fetchCourses} setQuery={this.setQuery}/>
+        </View>
+        <ScrollView 
+          scrollEventThrottle={16} 
+          onScroll={({nativeEvent}) => this.handleScroll(nativeEvent)} 
+          contentContainerStyle={{alignItems: 'center', justifyContent: "space-between"}} 
+        >
+          {this.mapCoursesToCard()}
 
         </ScrollView>
       </View>
@@ -112,6 +126,18 @@ const styles = StyleSheet.create({
       margin: 10,
       color: "#FFCE00"
     },
+    header: {
+      fontSize: 30,
+      textAlign: 'center',
+      color: "#FFCE00",
+      fontStyle: "italic"
+    },
+    searchText: {
+      color: "#C0CCD8",
+      fontSize: 14,
+      margin: 5
+    },
+
     instructions: {
       textAlign: 'center',
       color: '#333333',
@@ -125,13 +151,13 @@ const styles = StyleSheet.create({
     },
     courseText : {
       color: "#FFFFFF"
+    },
+    searchContainer: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: "100%"
+    },
+    searchbar: {
+      
     }
   });
-
-  const AppNavigator = createStackNavigator(
-    {
-      Home: HomeScreen,
-    },
-  );
-
-export default createAppContainer(AppNavigator);
