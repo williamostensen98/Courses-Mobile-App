@@ -7,79 +7,80 @@ import SearchBar from './SearchBar';
 
 export class HomeScreen extends Component {
    
-    static navigationOptions = {
-        header: null
-      };
+  static navigationOptions = {
+      header: null
+    };
 
-    state = {
-        query: '',
-        courses: null,
-        limit: 10,
-        total: 0
+  state = {
+      query: '',
+      courses: null,
+      limit: 10,
+      total: 0
+    }
+
+  fetchCourses = async (q="a") => {
+    const courses = await fetch("http://it2810-39.idi.ntnu.no:3001/courses?" + q)
+    .then(res => res.json())
+    .catch(err => console.log(err))
+    // console.log("Type of courses: ", courses.docs)
+    this.setState({
+      courses: courses.docs, 
+      limit: courses.limit,
+      total: courses.total,
+    })
+  }
+
+  setQuery = q => {
+    this.setState({
+      query: q
+    })
+  }
+
+
+  componentDidMount() {
+    this.fetchCourses()
+    this.setQuery("a")
+  }
+
+  mapCoursesToCard() {
+    if (this.state.courses != null) {
+      let courseList = this.state.courses.map((course, index) => 
+      <TouchableOpacity key={index} onPress={() => this.props.navigation.navigate("Course", {
+          course: course
+      })} style={{width: "100%"}}>
+        <Card 
+          course={course} 
+          key={index} 
+          style={{width: "80%"}}
+          containerStyle={{backgroundColor: "#3b3f4b", borderRadius: 15, borderColor: "#3b3f4b"}}
+        >
+          <Text style={{color: "#FFCE00", fontSize: 20, fontWeight: "bold"}}>
+            {course.course_code + " " + course.norwegian_name}
+          </Text>
+        </Card>
+        </TouchableOpacity>
+      )
+    return courseList
+    }
+    return null
+    
+  }
+
+  handleScroll = nativeEvent => {
+    if (this.isCloseToBottom(nativeEvent) && (this.state.limit < this.state.total)) {       
+      this.setState(
+        prevState => ({limit: prevState.limit+=10}))
+        this.fetchCourses(this.state.query+'&limit='+this.state.limit)
       }
+  }
+  
+
+
+  isCloseToBottom({ layoutMeasurement, contentOffset, contentSize }) {   
+    return layoutMeasurement.height + contentOffset.y >= contentSize.height - 50;
+  }
+
     
-      fetchCourses = async (q="") => {
-        const courses = await fetch("http://it2810-39.idi.ntnu.no:3001/courses?" + q)
-        .then(res => res.json())
-        .catch(err => console.log(err))
-        // console.log("Type of courses: ", courses.docs)
-        this.setState({
-          courses: courses.docs, 
-          limit: courses.limit,
-          total: courses.total,
-        })
-      }
-    
-      setQuery = q => {
-        this.setState({
-          query: q
-        })
-      }
-    
-    
-      componentDidMount() {
-        this.fetchCourses()
-      }
-    
-      mapCoursesToCard() {
-        if (this.state.courses != null) {
-          let courseList = this.state.courses.map((course, index) => 
-          <TouchableOpacity key={index} onPress={() => this.props.navigation.navigate("Course", {
-              course: course
-          })} style={{width: "100%"}}>
-            <Card 
-              course={course} 
-              key={index} 
-              style={{width: "80%"}}
-              containerStyle={{backgroundColor: "#3b3f4b", borderRadius: 15, borderColor: "#3b3f4b"}}
-            >
-              <Text style={{color: "#FFCE00", fontSize: 20, fontWeight: "bold"}}>
-                {course.course_code + " " + course.norwegian_name}
-              </Text>
-            </Card>
-            </TouchableOpacity>
-          )
-        return courseList
-        }
-        return null
-        
-      }
-    
-      handleScroll = nativeEvent => {
-        if (this.isCloseToBottom(nativeEvent) && (this.state.limit < this.state.total)) {       
-          this.setState(
-            prevState => ({limit: prevState.limit+=10}))
-            this.fetchCourses(this.state.query+'&limit='+this.state.limit)
-        }
-      }
-      
-    
-    
-      isCloseToBottom({ layoutMeasurement, contentOffset, contentSize }) {   
-        return layoutMeasurement.height + contentOffset.y >= contentSize.height - 50;
-      }
-    
-      
 
   render() {
     return (
