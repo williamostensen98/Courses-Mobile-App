@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, AsyncStorage, Dimensions} from 'react-native';
 import {Card, Button} from "react-native-elements"
-import { createStackNavigator } from 'react-navigation-stack';
 
 import SearchBar from './SearchBar';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -9,9 +8,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 
 export default class HomeScreen extends Component {
    
-    static navigationOptions = {
-      
-      };
+   
 
     state = {
         query: '',
@@ -55,11 +52,11 @@ export default class HomeScreen extends Component {
           let courseList = this.state.courses.map((course, index) => 
           <TouchableOpacity key={index} onPress={() => this.props.navigation.navigate("Course", {
               course: course
-          })} style={{width: "100%"}}>
+          })} style={{width: Dimensions.get('window').width}}>
             <Card 
               course={course} 
               key={index} 
-              style={{width: "80%"}}
+              style={{width: Dimensions.get('window').width*0.8}}
               containerStyle={{backgroundColor: "#3b3f4b", borderRadius: 15, borderColor: "#3b3f4b"}}
             >
               <Text style={{color: "#FFCE00", fontSize: 20, fontWeight: "bold"}}>
