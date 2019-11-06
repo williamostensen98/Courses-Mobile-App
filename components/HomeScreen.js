@@ -63,6 +63,9 @@ export default class HomeScreen extends Component {
             </Card>
             </TouchableOpacity>
           )
+        if (this.state.hasSearched && this.state.courses.length == 0) {
+            return <Text>Your search gave no results</Text>
+        }
         return courseList
         }
         return null
