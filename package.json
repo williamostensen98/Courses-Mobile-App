@@ -38,8 +38,9 @@
     "preset": "react-native"
   },
   "rnpm": {
-    "assets": ["./assets/fonts"]
- },
+    "assets": [
+      "./assets/fonts"
+    ]
+  },
   "private": true
- 
 }
