@@ -95,9 +95,12 @@ export default class HomeScreen extends Component {
           {""}Courses
           </Text>
           </View>
-          <Text style={styles.searchText}>
-             SEARCH FOR COURSE NAMES OR CODES...
-          </Text>
+          <View style={{flexDirection: "row"}}>
+            <Icon name="search" size={14} color={"#C0CCD8"} style={{top: 5}}/> 
+            <Text style={styles.searchText}>
+               SEARCH FOR COURSE NAMES OR CODES...
+            </Text>
+          </View>
            <SearchBar style={styles.searchbar} fetchCourses={this.fetchCourses} setQuery={this.setQuery}/>
         </View>
         <ScrollView 

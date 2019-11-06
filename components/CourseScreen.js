@@ -6,6 +6,7 @@ import Hr from "react-native-hr-component";
 
 
 
+
 export default class CourseScreen extends Component {
 
     static navigationOptions = {
@@ -55,6 +56,7 @@ export default class CourseScreen extends Component {
                 </Text>
                 {(this.averageDifficulty()) + "\n"}
               </Text>
+
 
           </ScrollView>
         </View>
