@@ -22,12 +22,12 @@ const styles = StyleSheet.create({
     search: {
         fontSize: 20,
         margin: 10,
-        marginBottom: 20,
+        // marginBottom: 20,
         paddingLeft: 10,
         height: 40,
         width: '85%',
         color: "#000000",
-        backgroundColor: "#FFFFFF",
+        backgroundColor: "#C0CCD8",
         borderRadius: 10,
     },
 })

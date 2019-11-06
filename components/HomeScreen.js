@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { View, Text, StyleSheet, Button, ScrollView, TouchableOpacity} from 'react-native';
+import { View, Text, StyleSheet, Button, ScrollView, TouchableOpacity, Header} from 'react-native';
 import {Card} from "react-native-elements"
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
@@ -7,13 +7,15 @@ import SearchBar from './SearchBar';
 import * as Font from 'expo-font';
 import Filter from './Filter'
 import { throwStatement } from '@babel/types';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
-export class HomeScreen extends Component {
+
+export default class HomeScreen extends Component {
    
 
       
     static navigationOptions = {
-        header: null
+      
       };
 
     state = {
@@ -27,7 +29,8 @@ export class HomeScreen extends Component {
           codeClicked: false, 
           nameClicked: true, 
         }, 
-        filter: ""
+        filter: "",
+        hasSearched: false,
       }
     
       fetchCourses = async (q="", sorting, filtering) => {
@@ -41,6 +44,7 @@ export class HomeScreen extends Component {
           total: courses.total,
           sort: sorting, 
           filter: filtering,
+          hasSearched: true
         })
         console.log(this.state.query, this.state.sort, this.state.filter)
       }
@@ -127,10 +131,21 @@ export class HomeScreen extends Component {
 
     return (
       <View style={styles.container}>
-        <Text style={styles.text}>
-        </Text>
-        <SearchBar fetchCourses={this.fetchCourses} setQuery={this.setQuery}/>
-        <TouchableOpacity
+        <View style={styles.searchContainer}>
+          <View style={{flexDirection: "row"}}>
+          <Icon name="bar-chart" size={35} color={"#FFCE00"}/> 
+          <Text h1 style={styles.header}>
+          {""}Courses
+          </Text>
+          </View>
+          <View style={{flexDirection: "row"}}>
+            <Icon name="search" size={14} color={"#C0CCD8"} style={{top: 5}}/> 
+            <Text style={styles.searchText}>
+               SEARCH FOR COURSE NAMES OR CODES...
+            </Text>
+          </View>
+           <SearchBar style={styles.searchbar} fetchCourses={this.fetchCourses} setQuery={this.setQuery}/>
+           <TouchableOpacity
           
           style={styles.button}
           onPress={this.ShowHideComponent}
@@ -141,11 +156,13 @@ export class HomeScreen extends Component {
           </Text>: null}
         </TouchableOpacity>
         {this.state.showFilter ? this.filterFunction() : null}
-        <ScrollView scrollEventThrottle={16} 
-                    onScroll={({nativeEvent}) => this.handleScroll(nativeEvent)} 
-                    contentContainerStyle={{alignItems: 'center', justifyContent: "space-between"}} >
-
-            {this.mapCoursesToCard()}
+        </View>
+        <ScrollView 
+          scrollEventThrottle={16} 
+          onScroll={({nativeEvent}) => this.handleScroll(nativeEvent)} 
+          contentContainerStyle={{alignItems: 'center', justifyContent: "space-between"}} 
+        >
+          {this.mapCoursesToCard()}
 
         </ScrollView>
       </View>
@@ -166,6 +183,18 @@ const styles = StyleSheet.create({
       margin: 10,
       color: "#FFCE00"
     },
+    header: {
+      fontSize: 30,
+      textAlign: 'center',
+      color: "#FFCE00",
+      fontStyle: "italic"
+    },
+    searchText: {
+      color: "#C0CCD8",
+      fontSize: 14,
+      margin: 5
+    },
+
     instructions: {
       textAlign: 'center',
       color: '#333333',
@@ -179,6 +208,14 @@ const styles = StyleSheet.create({
     courseText : {
       color: "#FFFFFF"
     }, 
+    searchContainer: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: "100%"
+    },
+    searchbar: {
+      
+    },
     button: {
       backgroundColor: "#ffce00",
       width: "85%",
@@ -210,7 +247,5 @@ const styles = StyleSheet.create({
   const AppNavigator = createStackNavigator(
     {
       Home: HomeScreen,
-    },
+    }
   );
-
-export default createAppContainer(AppNavigator);
