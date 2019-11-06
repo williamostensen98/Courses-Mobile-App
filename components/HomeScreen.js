@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
-import { View, Text, StyleSheet, Button, ScrollView, TouchableOpacity, AsyncStorage} from 'react-native';
-import {Card} from "react-native-elements"
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, AsyncStorage, Dimensions} from 'react-native';
+import {Card, Button} from "react-native-elements"
 import { createStackNavigator } from 'react-navigation-stack';
-import Hr from 'react-native-hr-component'
+
 import SearchBar from './SearchBar';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
@@ -132,8 +132,11 @@ export default class HomeScreen extends Component {
       this.setState({mappedHistory: this.state.searchHistory
                       .map((search, index) => 
                       <Button key={index}
-                          color='#FFFFFF'
+                          type="clear"
+                          // buttonStyle={{alignItems: 'stretch'}}
+                          icon= {<Icon name="history" color="#c5c9d4" size={17} style={{right:7}}/>}
                           title={search}
+                          titleStyle={{color:'#c5c9d4', fontStyle:'italic', textAlign: 'left'}}
                           onPress={() => this.fetchCourses(search).then(this.setQuery(search)).then(console.log("PRESSED", search))}
                       />)
       }) 
@@ -141,19 +144,21 @@ export default class HomeScreen extends Component {
 
       showHistory = () => {
         return (
-        <View>
-          <Text style={{fontWeight: 'bold', fontSize: 20, color: '#FFFFFF'}}>
+        <View style={{alignItems: 'center', width:'120%', marginTop: 20}}>
+          <Text style={{fontWeight: 'bold', fontSize: 22, color: '#FFFFFF'}}>
             Search history:
           </Text>
-          {this.state.mappedHistory}
-          <Button color='#FFCE00' title={"Clear search history"} onPress={() => this.clearHistory()}/>
-          <Hr></Hr>
+          <View style={{alignItems: 'left', width: Dimensions.get('window').width*0.69, marginTop: 10}}>
+            {this.state.mappedHistory}
+          </View>
+          <Button type="clear" 
+                  titleStyle={{color:'#FFCE00', fontWeight: 'bold', fontSize: 20}} 
+                  title={"Clear search history"} 
+                  onPress={() => this.clearHistory()}/>
         </View>
       )
     }
       
-      
-
       
 
   render() {
@@ -167,13 +172,13 @@ export default class HomeScreen extends Component {
           {""}Courses
           </Text>
           </View>
-          <Text style={styles.searchText}>
-             SEARCH FOR COURSE NAMES OR CODES...
-          </Text>
-          <SearchBar style={styles.searchbar}
-                   fetchCourses={this.fetchCourses} 
-                   setQuery={this.setQuery}
-                   storeSearch={this.storeSearch}/>
+          <View style={{flexDirection: "row"}}>
+            <Icon name="search" size={14} color={"#C0CCD8"} style={{top: 5}}/> 
+            <Text style={styles.searchText}>
+               SEARCH FOR COURSE NAMES OR CODES...
+            </Text>
+          </View>
+           <SearchBar style={styles.searchbar} fetchCourses={this.fetchCourses} setQuery={this.setQuery} storeSearch={this.storeSearch}/>
         </View>
         <ScrollView 
           scrollEventThrottle={16} 
@@ -239,17 +244,7 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       width: "100%"
     },
+    
   });
 
-  const AppNavigator = createStackNavigator({
-    Home: {
-        screen: HomeScreen,
-    },
-    // searchContainer: {
-    //   alignItems: 'center',
-    //   justifyContent: 'center',
-    //   width: "100%"
-    // },
-    // searchbar: {
-    // }
-  });
+ 
