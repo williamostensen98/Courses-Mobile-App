@@ -1,14 +1,16 @@
 import React, {Component} from 'react';
 import { View, Text, StyleSheet, Button, ScrollView, TouchableOpacity, AsyncStorage} from 'react-native';
 import {Card} from "react-native-elements"
-import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
+import Hr from 'react-native-hr-component'
 import SearchBar from './SearchBar';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
-export class HomeScreen extends Component {
+
+export default class HomeScreen extends Component {
    
     static navigationOptions = {
-        header: null
+      
       };
 
     state = {
@@ -19,17 +21,19 @@ export class HomeScreen extends Component {
         searchHistory: [],
         mappedHistory: '',
         defaultText: null,
+        hasSearched: false,
       }
     
       fetchCourses = async (q="") => {
         const courses = await fetch("http://it2810-39.idi.ntnu.no:3001/courses?" + q)
         .then(res => res.json())
         .catch(err => console.log(err))
-        // console.log("Type of courses: ", courses.docs)
+      console.log("QUERY: ", q)
         this.setState({
           courses: courses.docs, 
           limit: courses.limit,
           total: courses.total,
+          hasSearched: true
         })
       }
     
@@ -37,6 +41,7 @@ export class HomeScreen extends Component {
         this.setState({
           query: q
         })
+        console.log("-------- SET", q)
       }
     
     
@@ -88,7 +93,7 @@ export class HomeScreen extends Component {
         .then(history => {
           (history == null) ? 
                 this.setState({searchHistory: []}) : this.setState({searchHistory: history})
-                console.log("SEARCH HISTORY:", this.state.searchHistory)
+                // console.log("SEARCH HISTORY:", this.state.searchHistory)
                 this.mapHistory()
           }
 
@@ -102,7 +107,7 @@ export class HomeScreen extends Component {
             tempArr = JSON.stringify(tempArr)
             await AsyncStorage.setItem("searchHistory", tempArr)
             this.setState({defaultText: null})
-            console.log("STORED", text)
+            // console.log("STORED", text)
         }
         else{
           this.retrieveHistory()
@@ -112,7 +117,7 @@ export class HomeScreen extends Component {
     clearHistory = () => {
       try {
          AsyncStorage.clear()
-         console.log("CLEARED")
+        //  console.log("CLEARED")
          this.setState({searchHistory: [],
                         mappedHistory: '', 
                         defaultText: <Text style={styles.search}>Search history cleared!</Text>
@@ -123,19 +128,18 @@ export class HomeScreen extends Component {
       }
     }
 
-    mapHistory = () => {
+    mapHistory =  () => {
       this.setState({mappedHistory: this.state.searchHistory
                       .map((search, index) => 
                       <Button key={index}
                           color='#FFFFFF'
                           title={search}
-                          onPress={() => this.fetchCourses(search).then(this.setQuery(search))}
+                          onPress={() => this.fetchCourses(search).then(this.setQuery(search)).then(console.log("PRESSED", search))}
                       />)
       }) 
     }
 
       showHistory = () => {
-
         return (
         <View>
           <Text style={{fontWeight: 'bold', fontSize: 20, color: '#FFFFFF'}}>
@@ -143,6 +147,7 @@ export class HomeScreen extends Component {
           </Text>
           {this.state.mappedHistory}
           <Button color='#FFCE00' title={"Clear search history"} onPress={() => this.clearHistory()}/>
+          <Hr></Hr>
         </View>
       )
     }
@@ -155,17 +160,29 @@ export class HomeScreen extends Component {
  
     return (
       <View style={styles.container}>
-        <Text style={styles.text}>
-        </Text>
-        <SearchBar fetchCourses={this.fetchCourses} 
+        <View style={styles.searchContainer}>
+          <View style={{flexDirection: "row"}}>
+          <Icon name="bar-chart" size={35} color={"#FFCE00"}/> 
+          <Text h1 style={styles.header}>
+          {""}Courses
+          </Text>
+          </View>
+          <Text style={styles.searchText}>
+             SEARCH FOR COURSE NAMES OR CODES...
+          </Text>
+          <SearchBar style={styles.searchbar}
+                   fetchCourses={this.fetchCourses} 
                    setQuery={this.setQuery}
                    storeSearch={this.storeSearch}/>
-        <ScrollView scrollEventThrottle={16} 
-                    onScroll={({nativeEvent}) => this.handleScroll(nativeEvent)} 
-                    contentContainerStyle={{alignItems: 'center', justifyContent: "space-between"}} >
-
-            {this.state.query===''? ((this.state.mappedHistory.length>0)? this.showHistory() : this.state.defaultText) 
+        </View>
+        <ScrollView 
+          scrollEventThrottle={16} 
+          onScroll={({nativeEvent}) => this.handleScroll(nativeEvent)} 
+          contentContainerStyle={{alignItems: 'center', justifyContent: "space-between"}} 
+        >
+          {this.state.query===''? ((this.state.mappedHistory.length>0)? this.showHistory() : this.state.defaultText) 
                                   : this.mapCoursesToCard()}
+          
 
         </ScrollView>
       </View>
@@ -186,6 +203,18 @@ const styles = StyleSheet.create({
       margin: 10,
       color: "#FFCE00"
     },
+    header: {
+      fontSize: 30,
+      textAlign: 'center',
+      color: "#FFCE00",
+      fontStyle: "italic"
+    },
+    searchText: {
+      color: "#C0CCD8",
+      fontSize: 14,
+      margin: 5
+    },
+
     instructions: {
       textAlign: 'center',
       color: '#333333',
@@ -203,14 +232,24 @@ const styles = StyleSheet.create({
     search: {
       color: "#FFFFFF",
       fontSize: 18,
-
-    }
+      marginTop: 100,
+    },
+    searchContainer: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: "100%"
+    },
   });
 
-  const AppNavigator = createStackNavigator(
-    {
-      Home: HomeScreen,
+  const AppNavigator = createStackNavigator({
+    Home: {
+        screen: HomeScreen,
     },
-  );
-
-export default createAppContainer(AppNavigator);
+    // searchContainer: {
+    //   alignItems: 'center',
+    //   justifyContent: 'center',
+    //   width: "100%"
+    // },
+    // searchbar: {
+    // }
+  });
