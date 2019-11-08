@@ -29,7 +29,8 @@ export default class HomeScreen extends Component {
         code: false,
         hasSearched: false,
       }
-    
+      
+      //Fetches courses from database, and updates states to fit the given query specifications (sorting, filtering etc.)
       fetchCourses = async (q="", sorting, filtering, ordering) => {
         const courses = await fetch("http://it2810-39.idi.ntnu.no:3001/courses?" + q + sorting + filtering + "&order=" + ordering)
         .then(res => res.json())
@@ -45,7 +46,6 @@ export default class HomeScreen extends Component {
         })
       }
       storeFilterState = (f, s, c, n) => {
-        console.log(f, s, c, n)
         this.setState({
           fall: f, 
           spring: s, 
@@ -54,8 +54,8 @@ export default class HomeScreen extends Component {
         })
       }
      
+      //Updates the state 'query'
       setQuery = (q) => {
-        
         this.setState({
           query: q
         })
@@ -70,6 +70,7 @@ export default class HomeScreen extends Component {
         });
         this.setState({ fontLoaded: true });
       }
+
 
       mapCoursesToCard() {
         if (this.state.courses != null) {
@@ -90,9 +91,8 @@ export default class HomeScreen extends Component {
             </Card>
             </TouchableOpacity>
           )
-        if (this.state.hasSearched && this.state.courses.length == 0) {
-          console.log("HEI")
-            return <Text style={styles.noresult}>Your search gave no results</Text>
+        if (this.state.hasSearched && this.state.courses.length == 0 && this.state.fontLoaded) {
+            return <Text style={styles.feedback}>Your search gave no results</Text>
         }
         return courseList
         }
@@ -100,6 +100,7 @@ export default class HomeScreen extends Component {
         
       }
     
+      //Loads more items if the user has scrolled to the bottom, and if there is more data available
       handleScroll = nativeEvent => {
         if (this.isCloseToBottom(nativeEvent) && (this.state.limit < this.state.total+10)) {       
           this.setState(
@@ -108,36 +109,41 @@ export default class HomeScreen extends Component {
         }
       }
       
+      //Checks if user has scrolled "close" to bottom of window
       isCloseToBottom({ layoutMeasurement, contentOffset, contentSize }) {   
         return layoutMeasurement.height + contentOffset.y >= contentSize.height - 50;
       }
     
 
+    //Retrieved search history from AsyncStorage, and puts it in state 'searchHistory' if there is any data
     retrieveHistory = async () =>{
       // Query local history
       AsyncStorage.getItem("searchHistory").then(history => JSON.parse(history))
         .then(history => {
           (history == null) ? 
                 this.setState({searchHistory: []}) : this.setState({searchHistory: history})
-                this.mapHistory()
+          this.mapHistory()
           }
 
       )
     }
-    // save the search tag
+    //Stores the user input query in AsyncStorage
+    //Does not count empty strings as query
     storeSearch = async (text) => {
-          if(text!=='') {
-            let tempArr = this.state.searchHistory;
-            tempArr.unshift(text);
-            tempArr = JSON.stringify(tempArr)
-            await AsyncStorage.setItem("searchHistory", tempArr)
-            this.setState({defaultText:''})
+        if(text!=='') {
+          let tempArr = this.state.searchHistory;
+          tempArr.unshift(text);
+          tempArr = JSON.stringify(tempArr)
+          await AsyncStorage.setItem("searchHistory", tempArr)
+          this.setState({defaultText:''})
         }
-        else{
+        else {
           this.retrieveHistory()
         }
+
     }
 
+    //Deletes all the search history from AsyncStorage. Sets defaultText so the user gets feedback that it is completed.
     clearHistory = () => {
       try {
          AsyncStorage.clear()
@@ -151,8 +157,9 @@ export default class HomeScreen extends Component {
       }
     }
 
+    //Maps the search history from an array to Button-components to look like text
+    //If the button is pressed, the query will be re-fetched.
     mapHistory =  () => {
-      
       this.setState({mappedHistory: this.state.searchHistory
                       .map((search, index) => 
                       <Button key={index}
@@ -165,8 +172,10 @@ export default class HomeScreen extends Component {
       }) 
     }
 
-      showHistory = () => {
-        return ( 
+    //Makes the entire search history view. 
+    //Includes button for clearing search history
+    showHistory = () => {
+      return ( 
         <View style={{alignItems: 'center', width:'120%', marginTop: 20}}>
            {this.state.fontLoaded ? <Text style={{fontSize: 24, color: '#FFFFFF', fontFamily:'oswald'}}>
             Search history:
@@ -175,42 +184,42 @@ export default class HomeScreen extends Component {
             {this.state.mappedHistory}
           </View>
           {this.state.fontLoaded ? 
-          <Button type="clear" 
-                  titleStyle={{color:'#FFCE00', fontWeight: 'bold', fontSize: 22, fontFamily: 'oswald'}} 
-                  title={"Clear search history"} 
-                  onPress={() => this.clearHistory()}/>: null }
+            <Button type="clear" 
+                    titleStyle={{color:'#FFCE00', fontWeight: 'bold', fontSize: 22, fontFamily: 'oswald'}} 
+                    title={"Clear search history"} 
+                    onPress={() => this.clearHistory()}/>
+          : null }
         </View>
       )
     }
       
       
-      ShowHideComponent = () => {
-        
-        if (this.state.showFilter === true) {
-          this.setState({showFilter : false });
-        } else {
-          this.setState({ showFilter : true });
-        }
-      };
-      filterFunction = () => {
-        // console.log(this.state.fall, this.state.spring, this.state.code, this.state.name)
-        return  (
-          <View style={styles.filterContainer}>
-            <Filter 
-              storeFilterState={this.storeFilterState} 
-              fetchCourses={this.fetchCourses} 
-              query={this.state.query} 
-              fall={this.state.fall}
-              spring={this.state.spring}
-              name={this.state.name}
-              code={this.state.code}
-              ordering={this.state.order}
-              filtering={this.state.filter}
-              sorting={this.state.sort}
-
-              />
-          </View> )
+    ShowHideComponent = () => {
+      
+      if (this.state.showFilter === true) {
+        this.setState({showFilter : false });
+      } else {
+        this.setState({ showFilter : true });
       }
+    };
+    filterFunction = () => {
+      return  (
+        <View style={styles.filterContainer}>
+          <Filter 
+            storeFilterState={this.storeFilterState} 
+            fetchCourses={this.fetchCourses} 
+            query={this.state.query} 
+            fall={this.state.fall}
+            spring={this.state.spring}
+            name={this.state.name}
+            code={this.state.code}
+            ordering={this.state.order}
+            filtering={this.state.filter}
+            sorting={this.state.sort}
+
+            />
+        </View> )
+    }
 
   render() {
  
@@ -252,8 +261,10 @@ export default class HomeScreen extends Component {
           onScroll={({nativeEvent}) => this.handleScroll(nativeEvent)} 
           contentContainerStyle={{alignItems: 'center', justifyContent: "space-between"}} 
         >
+          {/* On empty string, it will render the search history if there is any. If there is no history available, it will say so.
+          Will show the queried query if there is a query. */}
           {this.state.query==='' && this.state.fontLoaded ? ((this.state.mappedHistory.length>0)? this.showHistory() 
-                                  : <Text style={styles.search}>{this.state.defaultText}</Text>) 
+                                  : <Text style={styles.feedback}>{this.state.defaultText}</Text>) 
                                   : this.mapCoursesToCard()}
           
         </ScrollView>
@@ -302,11 +313,6 @@ const styles = StyleSheet.create({
     courseText : {
       color: "#FFFFFF"
     },
-    search: {
-      color: "#FFFFFF",
-      fontSize: 18,
-      marginTop: 100,
-    },
     searchContainer: {
       alignItems: 'center',
       justifyContent: 'center',
@@ -316,8 +322,6 @@ const styles = StyleSheet.create({
       backgroundColor: "#ffce00",
       width: "85%",
       borderRadius: 5,
-      // borderWidth: 1,
-      // borderColor: "#ffce00",
       padding: 5,
       marginBottom: 20
     }, 
@@ -327,7 +331,6 @@ const styles = StyleSheet.create({
       textAlign: 'center',
       color: "#3b3f4b",
       fontSize: 20,
-      // textAlign: 'center',
       margin: 'auto',
       fontFamily: 'oswald',
     }, 
@@ -337,8 +340,10 @@ const styles = StyleSheet.create({
       backgroundColor: "#ffce00",
       marginTop: 15,
     },
-    noresult: {
-      marginTop: 30,
-      color: "#C0CCD8"
+    feedback: {
+      marginTop: 50,
+      color: "#C0CCD8",
+      fontFamily: 'oswald',
+      fontSize: 18,
     }
   });
