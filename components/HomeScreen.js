@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, AsyncStorage, Dimensions} from 'react-native';
 import {Card, Button} from "react-native-elements"
-
 import SearchBar from './SearchBar';
 import * as Font from 'expo-font';
 import Filter from './Filter'
@@ -23,9 +22,14 @@ export default class HomeScreen extends Component {
         defaultText: '',
         fontLoaded: false,
         showFilter: false,
-        sort:"",
+        sort:"&sorting=norwegian_name",
         filter: "",
-        order: "",
+        order: "1",
+        fall: false, 
+        spring: false, 
+        name: true, 
+        code: false,
+        hasSearched: false,
       }
     
       fetchCourses = async (q="", sorting, filtering, ordering) => {
@@ -39,17 +43,19 @@ export default class HomeScreen extends Component {
           sort: sorting, 
           filter: filtering,
           order: ordering,
+          hasSearched: true
         })
       }
-      setSortState = (code, name) => {
+      storeFilterState = (f, s, c, n) => {
+        console.log(f, s, c, n)
         this.setState({
-          sort: {
-            codeClicked: !code, 
-            nameClicked: !name
-          }
+          fall: f, 
+          spring: s, 
+          code: c, 
+          name: n
         })
       }
-
+     
       setQuery = (q) => {
         
         this.setState({
@@ -86,6 +92,10 @@ export default class HomeScreen extends Component {
             </Card>
             </TouchableOpacity>
           )
+        if (this.state.hasSearched && this.state.courses.length == 0) {
+          console.log("HEI")
+            return <Text style={styles.noresult}>Your search gave no results</Text>
+        }
         return courseList
         }
         return null
@@ -93,7 +103,7 @@ export default class HomeScreen extends Component {
       }
     
       handleScroll = nativeEvent => {
-        if (this.isCloseToBottom(nativeEvent) && (this.state.limit < this.state.total)) {       
+        if (this.isCloseToBottom(nativeEvent) && (this.state.limit < this.state.total+10)) {       
           this.setState(
             prevState => ({limit: prevState.limit+=10}))
             this.fetchCourses(this.state.query + "&limit=" + this.state.limit,this.state.sort,this.state.filter, this.state.order)
@@ -184,9 +194,22 @@ export default class HomeScreen extends Component {
         }
       };
       filterFunction = () => {
+        // console.log(this.state.fall, this.state.spring, this.state.code, this.state.name)
         return  (
           <View style={styles.filterContainer}>
-            <Filter setSort={this.setSortState}  fetchCourses={this.fetchCourses} query={this.state.query} setQuery={this.setQuery} limit={this.state.limit} />
+            <Filter 
+              storeFilterState={this.storeFilterState} 
+              fetchCourses={this.fetchCourses} 
+              query={this.state.query} 
+              fall={this.state.fall}
+              spring={this.state.spring}
+              name={this.state.name}
+              code={this.state.code}
+              ordering={this.state.order}
+              filtering={this.state.filter}
+              sorting={this.state.sort}
+
+              />
           </View> )
       }
 
@@ -207,7 +230,7 @@ export default class HomeScreen extends Component {
                SEARCH FOR COURSE NAMES OR CODES
             </Text>
           </View>
-           <SearchBar style={styles.searchbar} fetchCourses={this.fetchCourses} setQuery={this.setQuery} storeSearch={this.storeSearch}/>
+           <SearchBar style={styles.searchbar} storeSearch={this.storeSearch} storeFilterState={this.storeFilterState} fetchCourses={this.fetchCourses} setQuery={this.setQuery}/>
            {this.state.query !== "" ? 
               <TouchableOpacity
                 style={styles.button}
@@ -312,6 +335,9 @@ const styles = StyleSheet.create({
       height: "95%", 
       backgroundColor: "#ffce00",
       marginTop: 15,
-      
+    },
+    noresult: {
+      marginTop: 30,
+      color: "#C0CCD8"
     }
   });
