@@ -117,8 +117,8 @@ export default class HomeScreen extends Component {
                 this.setState({searchHistory: []}) : this.setState({searchHistory: history})
                 this.mapHistory()
           }
-
       )
+      .catch(err => console.log(err))
     }
     // save the search tag
     storeSearch = async (text) => {
@@ -242,6 +242,8 @@ export default class HomeScreen extends Component {
     ); 
   }
 }
+
+
 
 const styles = StyleSheet.create({
     container: {
