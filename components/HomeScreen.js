@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, AsyncStorage, Dimensions} from 'react-native';
 import {Card, Button} from "react-native-elements"
-
 import SearchBar from './SearchBar';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
@@ -22,6 +21,7 @@ export default class HomeScreen extends Component {
       }
     
       fetchCourses = async (q="") => {
+        console.log("Før await:")
         const courses = await fetch("http://it2810-39.idi.ntnu.no:3001/courses?" + q)
         .then(res => res.json())
         .catch(err => console.log(err))

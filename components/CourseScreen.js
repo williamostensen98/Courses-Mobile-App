@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
     text: {
       color: "#C0CCD8",
       fontSize: 20,
-      margin: 10
+      margin: 20
 
     },
     instructions: {
