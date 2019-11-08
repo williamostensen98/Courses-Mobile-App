@@ -14,6 +14,7 @@ export default function SearchBar(props) {
                                             .then(props.setQuery(event.nativeEvent.text))
                                             .then(props.storeSearch(event.nativeEvent.text))}
                 autoFocus={true}    
+                returnKeyType={'search'}
             />
         
     )

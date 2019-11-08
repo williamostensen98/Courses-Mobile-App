@@ -167,7 +167,7 @@ export default class HomeScreen extends Component {
             {this.state.mappedHistory}
           </View>
           <Button type="clear" 
-                  titleStyle={{color:'#FFCE00', fontWeight: 'bold', fontSize: 20}} 
+                  titleStyle={{color:'#FFCE00', fontWeight: 'bold', fontSize: 20, fontFamily: 'oswald'}} 
                   title={"Clear search history"} 
                   onPress={() => this.clearHistory()}/>
         </View>
@@ -198,18 +198,17 @@ export default class HomeScreen extends Component {
           <View style={{flexDirection: "row"}}>
           <Icon name="bar-chart" size={35} color={"#FFCE00"}/> 
           <Text h1 style={styles.header}>
-          {""}Courses
+            COURSES
           </Text>
           </View>
           <View style={{flexDirection: "row"}}>
             <Icon name="search" size={14} color={"#C0CCD8"} style={{top: 5}}/> 
             <Text style={styles.searchText}>
-               SEARCH FOR COURSE NAMES OR CODES...
+               SEARCH FOR COURSE NAMES OR CODES
             </Text>
           </View>
            <SearchBar style={styles.searchbar} fetchCourses={this.fetchCourses} setQuery={this.setQuery} storeSearch={this.storeSearch}/>
            {this.state.query !== "" ? 
-
               <TouchableOpacity
                 style={styles.button}
                 onPress={this.ShowHideComponent} >
@@ -256,9 +255,11 @@ const styles = StyleSheet.create({
       fontSize: 30,
       textAlign: 'center',
       color: "#FFCE00",
-      fontStyle: "italic"
+      fontStyle: "italic",
+      // fontFamily: 'oswald'
     },
     searchText: {
+      // fontFamily: 'oswald',
       color: "#C0CCD8",
       fontSize: 14,
       margin: 5
