@@ -10,11 +10,12 @@ export default function SearchBar(props) {
             <TextInput 
                 style={styles.search}
                 placeholder={"Search..."}
-                onSubmitEditing={(event) => props.fetchCourses(event.nativeEvent.text)
+                onSubmitEditing={(event) => props.fetchCourses(event.nativeEvent.text, "", "", "1")
                                             .then(props.setQuery(event.nativeEvent.text))
                                             .then(props.storeSearch(event.nativeEvent.text))}
                 autoFocus={true}    
             />
+        
     )
 
 

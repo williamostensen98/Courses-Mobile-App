@@ -3,6 +3,9 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, AsyncStorage, Dim
 import {Card, Button} from "react-native-elements"
 
 import SearchBar from './SearchBar';
+import * as Font from 'expo-font';
+import Filter from './Filter'
+import { throwStatement } from '@babel/types';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 
@@ -18,23 +21,38 @@ export default class HomeScreen extends Component {
         searchHistory: [],
         mappedHistory: '',
         defaultText: '',
-        hasSearched: false,
+        fontLoaded: false,
+        showFilter: false,
+        sort:"",
+        filter: "",
+        order: "",
       }
     
-      fetchCourses = async (q="") => {
-        const courses = await fetch("http://it2810-39.idi.ntnu.no:3001/courses?" + q)
+      fetchCourses = async (q="", sorting, filtering, ordering) => {
+        const courses = await fetch("http://it2810-39.idi.ntnu.no:3001/courses?" + q + sorting + filtering + "&order=" + ordering)
         .then(res => res.json())
         .catch(err => console.log(err))
-      console.log("QUERY: ", q)
         this.setState({
           courses: courses.docs, 
           limit: courses.limit,
           total: courses.total,
-          hasSearched: true
+          sort: sorting, 
+          filter: filtering,
+          order: ordering,
+        })
+        console.log("state: ",this.state.query, this.state.sort, this.state.filter, this.state.order)
+      }
+      setSortState = (code, name) => {
+        this.setState({
+          sort: {
+            codeClicked: !code, 
+            nameClicked: !name
+          }
         })
       }
-    
-      setQuery = q => {
+
+      setQuery = (q) => {
+        
         this.setState({
           query: q
         })
@@ -42,9 +60,13 @@ export default class HomeScreen extends Component {
       }
     
     
-      componentDidMount() {
+      async componentDidMount() {
         this.fetchCourses()
         this.retrieveHistory()
+        await Font.loadAsync({
+          'oswald': require('./../assets/fonts/Oswald.ttf'),
+        });
+        this.setState({ fontLoaded: true });
       }
 
       mapCoursesToCard() {
@@ -59,9 +81,10 @@ export default class HomeScreen extends Component {
               style={{width: Dimensions.get('window').width*0.8}}
               containerStyle={{backgroundColor: "#3b3f4b", borderRadius: 15, borderColor: "#3b3f4b"}}
             >
-              <Text style={{color: "#FFCE00", fontSize: 20, fontWeight: "bold"}}>
+              {this.state.fontLoaded ? 
+              <Text style={{color: "#FFCE00", fontSize: 20, fontWeight: "bold", fontFamily: 'oswald'}}>
                 {course.course_code + " " + course.norwegian_name}
-              </Text>
+              </Text>: null}
             </Card>
             </TouchableOpacity>
           )
@@ -75,7 +98,7 @@ export default class HomeScreen extends Component {
         if (this.isCloseToBottom(nativeEvent) && (this.state.limit < this.state.total)) {       
           this.setState(
             prevState => ({limit: prevState.limit+=10}))
-            this.fetchCourses(this.state.query+'&limit='+this.state.limit)
+            this.fetchCourses(this.state.query + "&limit=" + this.state.limit,this.state.sort,this.state.filter, this.state.order)
         }
       }
       
@@ -156,6 +179,20 @@ export default class HomeScreen extends Component {
     }
       
       
+      ShowHideComponent = () => {
+        
+        if (this.state.showFilter === true) {
+          this.setState({showFilter : false });
+        } else {
+          this.setState({ showFilter : true });
+        }
+      };
+      filterFunction = () => {
+        return  (
+          <View style={styles.filterContainer}>
+            <Filter setSort={this.setSortState}  fetchCourses={this.fetchCourses} query={this.state.query} setQuery={this.setQuery} limit={this.state.limit} />
+          </View> )
+      }
 
   render() {
  
@@ -175,6 +212,20 @@ export default class HomeScreen extends Component {
             </Text>
           </View>
            <SearchBar style={styles.searchbar} fetchCourses={this.fetchCourses} setQuery={this.setQuery} storeSearch={this.storeSearch}/>
+           {this.state.query !== "" ? 
+
+           <TouchableOpacity
+          style={styles.button}
+          onPress={this.ShowHideComponent} >
+           {this.state.fontLoaded ? 
+           <Text style={styles.buttonText}>
+             {"FILTER"}
+          </Text>: null}
+        </TouchableOpacity>
+     
+        : null}
+
+        {this.state.showFilter ? this.filterFunction() : null}
         </View>
         <ScrollView 
           scrollEventThrottle={16} 
@@ -224,7 +275,6 @@ const styles = StyleSheet.create({
       backgroundColor: "#3b3f4b",
       flex: 1,
       padding: 0,
-  
     },
     courseText : {
       color: "#FFFFFF"
@@ -239,7 +289,37 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       width: "100%"
     },
-    
+    button: {
+      backgroundColor: "#ffce00",
+      width: "85%",
+      borderRadius: 5,
+      // borderWidth: 1,
+      // borderColor: "#ffce00",
+      padding: 5,
+      marginBottom: 20
+    }, 
+    buttonText:{
+      justifyContent: 'center',
+      alignSelf: 'center',
+      textAlign: 'center',
+      color: "#3b3f4b",
+      fontSize: 20,
+      // textAlign: 'center',
+      margin: 'auto',
+      fontFamily: 'oswald',
+    }, 
+    filterContainer: {
+      width: "100%", 
+      height: "95%", 
+      backgroundColor: "#ffce00",
+      marginTop: 15,
+      
+    }
   });
 
  
+//  const AppNavigator = createStackNavigator(
+//     {
+//       Home: HomeScreen,
+//     }
+//   );
