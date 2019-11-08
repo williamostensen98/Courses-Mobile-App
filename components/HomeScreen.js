@@ -2,6 +2,9 @@ import React, {Component} from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, AsyncStorage, Dimensions} from 'react-native';
 import {Card, Button} from "react-native-elements"
 import SearchBar from './SearchBar';
+import * as Font from 'expo-font';
+import Filter from './Filter'
+import { throwStatement } from '@babel/types';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 
@@ -16,35 +19,51 @@ export default class HomeScreen extends Component {
         total: 0,
         searchHistory: [],
         mappedHistory: '',
-        defaultText: null,
-        hasSearched: false,
+        defaultText: '',
+        fontLoaded: false,
+        showFilter: false,
+        sort:"",
+        filter: "",
+        order: "",
       }
     
-      fetchCourses = async (q="") => {
-        console.log("Før await:")
-        const courses = await fetch("http://it2810-39.idi.ntnu.no:3001/courses?" + q)
+      fetchCourses = async (q="", sorting, filtering, ordering) => {
+        const courses = await fetch("http://it2810-39.idi.ntnu.no:3001/courses?" + q + sorting + filtering + "&order=" + ordering)
         .then(res => res.json())
         .catch(err => console.log(err))
-      console.log("QUERY: ", q)
         this.setState({
           courses: courses.docs, 
           limit: courses.limit,
           total: courses.total,
-          hasSearched: true
+          sort: sorting, 
+          filter: filtering,
+          order: ordering,
         })
       }
-    
-      setQuery = q => {
+      setSortState = (code, name) => {
+        this.setState({
+          sort: {
+            codeClicked: !code, 
+            nameClicked: !name
+          }
+        })
+      }
+
+      setQuery = (q) => {
+        
         this.setState({
           query: q
         })
-        console.log("-------- SET", q)
       }
     
     
-      componentDidMount() {
+      async componentDidMount() {
         this.fetchCourses()
         this.retrieveHistory()
+        await Font.loadAsync({
+          'oswald': require('./../assets/fonts/Oswald.ttf'),
+        });
+        this.setState({ fontLoaded: true });
       }
 
       mapCoursesToCard() {
@@ -59,9 +78,10 @@ export default class HomeScreen extends Component {
               style={{width: Dimensions.get('window').width*0.8}}
               containerStyle={{backgroundColor: "#3b3f4b", borderRadius: 15, borderColor: "#3b3f4b"}}
             >
-              <Text style={{color: "#FFCE00", fontSize: 20, fontWeight: "bold"}}>
+              {this.state.fontLoaded ? 
+              <Text style={{color: "#FFCE00", fontSize: 20, fontWeight: "bold", fontFamily: 'oswald'}}>
                 {course.course_code + " " + course.norwegian_name}
-              </Text>
+              </Text>: null}
             </Card>
             </TouchableOpacity>
           )
@@ -78,7 +98,7 @@ export default class HomeScreen extends Component {
         if (this.isCloseToBottom(nativeEvent) && (this.state.limit < this.state.total)) {       
           this.setState(
             prevState => ({limit: prevState.limit+=10}))
-            this.fetchCourses(this.state.query+'&limit='+this.state.limit)
+            this.fetchCourses(this.state.query + "&limit=" + this.state.limit,this.state.sort,this.state.filter, this.state.order)
         }
       }
       
@@ -93,7 +113,6 @@ export default class HomeScreen extends Component {
         .then(history => {
           (history == null) ? 
                 this.setState({searchHistory: []}) : this.setState({searchHistory: history})
-                // console.log("SEARCH HISTORY:", this.state.searchHistory)
                 this.mapHistory()
           }
 
@@ -106,8 +125,7 @@ export default class HomeScreen extends Component {
             tempArr.unshift(text);
             tempArr = JSON.stringify(tempArr)
             await AsyncStorage.setItem("searchHistory", tempArr)
-            this.setState({defaultText: null})
-            // console.log("STORED", text)
+            this.setState({defaultText:''})
         }
         else{
           this.retrieveHistory()
@@ -117,10 +135,9 @@ export default class HomeScreen extends Component {
     clearHistory = () => {
       try {
          AsyncStorage.clear()
-        //  console.log("CLEARED")
          this.setState({searchHistory: [],
                         mappedHistory: '', 
-                        defaultText: <Text style={styles.search}>Search history cleared!</Text>
+                        defaultText: 'Search history cleared!'
                       })
       }
       catch(error){
@@ -129,26 +146,26 @@ export default class HomeScreen extends Component {
     }
 
     mapHistory =  () => {
+      
       this.setState({mappedHistory: this.state.searchHistory
                       .map((search, index) => 
                       <Button key={index}
                           type="clear"
-                          // buttonStyle={{alignItems: 'stretch'}}
                           icon= {<Icon name="history" color="#c5c9d4" size={17} style={{right:7}}/>}
                           title={search}
                           titleStyle={{color:'#c5c9d4', fontStyle:'italic', textAlign: 'left'}}
-                          onPress={() => this.fetchCourses(search).then(this.setQuery(search)).then(console.log("PRESSED", search))}
+                          onPress={() => this.fetchCourses(search, '','','1').then(this.setQuery(search))}
                       />)
       }) 
     }
 
       showHistory = () => {
-        return (
+        return ( 
         <View style={{alignItems: 'center', width:'120%', marginTop: 20}}>
           <Text style={{fontWeight: 'bold', fontSize: 22, color: '#FFFFFF'}}>
             Search history:
           </Text>
-          <View style={{alignItems: 'left', width: Dimensions.get('window').width*0.69, marginTop: 10}}>
+          <View style={{alignItems: 'flex-start', width: Dimensions.get('window').width*0.69, marginTop: 10}}>
             {this.state.mappedHistory}
           </View>
           <Button type="clear" 
@@ -160,6 +177,20 @@ export default class HomeScreen extends Component {
     }
       
       
+      ShowHideComponent = () => {
+        
+        if (this.state.showFilter === true) {
+          this.setState({showFilter : false });
+        } else {
+          this.setState({ showFilter : true });
+        }
+      };
+      filterFunction = () => {
+        return  (
+          <View style={styles.filterContainer}>
+            <Filter setSort={this.setSortState}  fetchCourses={this.fetchCourses} query={this.state.query} setQuery={this.setQuery} limit={this.state.limit} />
+          </View> )
+      }
 
   render() {
  
@@ -179,16 +210,31 @@ export default class HomeScreen extends Component {
             </Text>
           </View>
            <SearchBar style={styles.searchbar} fetchCourses={this.fetchCourses} setQuery={this.setQuery} storeSearch={this.storeSearch}/>
+           {this.state.query !== "" ? 
+
+              <TouchableOpacity
+                style={styles.button}
+                onPress={this.ShowHideComponent} >
+                {this.state.fontLoaded ? 
+                  <Text style={styles.buttonText}>
+                    {"FILTER"}
+                  </Text>: null
+                }
+              </TouchableOpacity>
+        
+            : null}
+
+        {this.state.showFilter ? this.filterFunction() : null}
         </View>
         <ScrollView 
           scrollEventThrottle={16} 
           onScroll={({nativeEvent}) => this.handleScroll(nativeEvent)} 
           contentContainerStyle={{alignItems: 'center', justifyContent: "space-between"}} 
         >
-          {this.state.query===''? ((this.state.mappedHistory.length>0)? this.showHistory() : this.state.defaultText) 
+          {this.state.query===''? ((this.state.mappedHistory.length>0)? this.showHistory() 
+                                  : <Text style={styles.search}>{this.state.defaultText}</Text>) 
                                   : this.mapCoursesToCard()}
           
-
         </ScrollView>
       </View>
     ); 
@@ -229,7 +275,6 @@ const styles = StyleSheet.create({
       backgroundColor: "#3b3f4b",
       flex: 1,
       padding: 0,
-  
     },
     courseText : {
       color: "#FFFFFF"
@@ -244,7 +289,30 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       width: "100%"
     },
-    
+    button: {
+      backgroundColor: "#ffce00",
+      width: "85%",
+      borderRadius: 5,
+      // borderWidth: 1,
+      // borderColor: "#ffce00",
+      padding: 5,
+      marginBottom: 20
+    }, 
+    buttonText:{
+      justifyContent: 'center',
+      alignSelf: 'center',
+      textAlign: 'center',
+      color: "#3b3f4b",
+      fontSize: 20,
+      // textAlign: 'center',
+      margin: 'auto',
+      fontFamily: 'oswald',
+    }, 
+    filterContainer: {
+      width: "100%", 
+      height: "95%", 
+      backgroundColor: "#ffce00",
+      marginTop: 15,
+      
+    }
   });
-
- 
