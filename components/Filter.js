@@ -5,13 +5,13 @@ import { Icon } from 'react-native-elements'
 
 const Filter  = (props) => {
 
-    const [fallClicked, setFallClicked] = useState(false);
-    const [springClicked, setSpringClicked] = useState(false);
-    const [codeClicked, setCodeClicked] = useState(false);
-    const [order, setOrder] = useState('1');
-    const [nameClicked, setNameClicked] = useState(true);
-    const [filterBy, setFilter]= useState("");
-    const [sortBy, setSorting] = useState("&sorting=norwegian_name");
+    const [fallClicked, setFallClicked] = useState(props.fall);
+    const [springClicked, setSpringClicked] = useState(props.spring);
+    const [codeClicked, setCodeClicked] = useState(props.code);
+    const [order, setOrder] = useState(props.ordering);
+    const [nameClicked, setNameClicked] = useState(props.name);
+    const [filterBy, setFilter]= useState(props.filtering);
+    const [sortBy, setSorting] = useState(props.sorting);
 
     useEffect(() => {
         let a = nameClicked ? 'NAME': 'CODE'
@@ -23,10 +23,12 @@ const Filter  = (props) => {
        console.log(filter, sort)
        console.log(sortBy)
 
-        props.fetchCourses(props.query, sort, filter, ordering)
+      props.fetchCourses(props.query, sort, filter, ordering)
+        
         
         
     }
+
    
     const handleOrderChange = () => {
        
@@ -42,6 +44,7 @@ const Filter  = (props) => {
     }
    
     const handleAllClicked = () => {
+      props.storeFilterState(false,false, codeClicked, nameClicked)
       setSpringClicked(false)
       setFallClicked(false)
       fetchNewCourses(sortBy, "", order)
@@ -51,6 +54,7 @@ const Filter  = (props) => {
      if(param === 'FALL'){
        
        fetchNewCourses(sortBy, "&taught_in_autumn=true", order)
+       props.storeFilterState(true,false, codeClicked, nameClicked)
        setFallClicked(true)
        setSpringClicked(false)
        setFilter("&taught_in_autumn=true")
@@ -58,6 +62,7 @@ const Filter  = (props) => {
      }
      else {
       fetchNewCourses(sortBy, "&taught_in_spring=true", order)
+      props.storeFilterState(false,true, codeClicked, nameClicked)
       setFallClicked(false)
       setSpringClicked(true)
       setFilter("&taught_in_spring=true")
@@ -72,6 +77,7 @@ const Filter  = (props) => {
             if(!codeClicked || orderChanged){
               let c = "&sorting=course_code"
               fetchNewCourses(c, filterBy, order)
+              props.storeFilterState(fallClicked,springClicked, true, false)
               setNameClicked(false)
               setCodeClicked(true)
               setSorting(c)
@@ -86,6 +92,7 @@ const Filter  = (props) => {
             if(!nameClicked || orderChanged){
               let n = "&sorting=norwegian_name"
               fetchNewCourses(n, filterBy, order)
+              props.storeFilterState(fallClicked,springClicked, false, true)
               setNameClicked(true)
               setCodeClicked(false)
               setSorting(n)

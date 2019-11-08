@@ -4,7 +4,6 @@ import {Card, Button} from "react-native-elements"
 import SearchBar from './SearchBar';
 import * as Font from 'expo-font';
 import Filter from './Filter'
-import { throwStatement } from '@babel/types';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 
@@ -13,7 +12,6 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 // 
 
 export default class HomeScreen extends Component {
-   
    
 
     state = {
@@ -26,9 +24,14 @@ export default class HomeScreen extends Component {
         defaultText: '',
         fontLoaded: false,
         showFilter: false,
-        sort:"",
+        sort:"&sorting=norwegian_name",
         filter: "",
-        order: "",
+        order: "1",
+        fall: false, 
+        spring: false, 
+        name: true, 
+        code: false,
+        hasSearched: false,
       }
     
 
@@ -57,10 +60,10 @@ export default class HomeScreen extends Component {
       // Method for applying sorting/filtering
       setSortState = (code, name) => {
         this.setState({
-          sort: {
-            codeClicked: !code, 
-            nameClicked: !name
-          }
+          fall: f, 
+          spring: s, 
+          code: c, 
+          name: n
         })
       }
 
@@ -97,7 +100,7 @@ export default class HomeScreen extends Component {
               containerStyle={{backgroundColor: "#3b3f4b", borderRadius: 15, borderColor: "#3b3f4b"}}
             >
               {this.state.fontLoaded ? 
-              <Text style={{color: "#FFCE00", fontSize: 20, fontWeight: "bold", fontFamily: 'oswald'}}>
+              <Text style={{color: "#FFCE00", fontSize: 20, fontFamily: 'oswald'}}>
                 {course.course_code + " " + course.norwegian_name}
               </Text>: null}
             </Card>
@@ -115,7 +118,7 @@ export default class HomeScreen extends Component {
     
       // Helper-method to implement infinite scroll
       handleScroll = nativeEvent => {
-        if (this.isCloseToBottom(nativeEvent) && (this.state.limit < this.state.total)) {       
+        if (this.isCloseToBottom(nativeEvent) && (this.state.limit < this.state.total+10)) {       
           this.setState(
             prevState => ({limit: prevState.limit+=10}))
             this.fetchCourses(this.state.query + "&limit=" + this.state.limit,this.state.sort,this.state.filter, this.state.order)
@@ -174,7 +177,7 @@ export default class HomeScreen extends Component {
                           type="clear"
                           icon= {<Icon name="history" color="#c5c9d4" size={17} style={{right:7}}/>}
                           title={search}
-                          titleStyle={{color:'#c5c9d4', fontStyle:'italic', textAlign: 'left'}}
+                          titleStyle={{color:'#c5c9d4', textAlign: 'left', fontFamily: 'oswald'}}
                           onPress={() => this.fetchCourses(search, '','','1').then(this.setQuery(search))}
                       />)
       }) 
@@ -185,16 +188,17 @@ export default class HomeScreen extends Component {
       showHistory = () => {
         return ( 
         <View style={{alignItems: 'center', width:'120%', marginTop: 20}}>
-          <Text style={{fontWeight: 'bold', fontSize: 22, color: '#FFFFFF'}}>
+           {this.state.fontLoaded ? <Text style={{fontSize: 24, color: '#FFFFFF', fontFamily:'oswald'}}>
             Search history:
-          </Text>
+          </Text> : null}
           <View style={{alignItems: 'flex-start', width: Dimensions.get('window').width*0.69, marginTop: 10}}>
             {this.state.mappedHistory}
           </View>
+          {this.state.fontLoaded ? 
           <Button type="clear" 
-                  titleStyle={{color:'#FFCE00', fontWeight: 'bold', fontSize: 20}} 
+                  titleStyle={{color:'#FFCE00', fontWeight: 'bold', fontSize: 22, fontFamily: 'oswald'}} 
                   title={"Clear search history"} 
-                  onPress={() => this.clearHistory()}/>
+                  onPress={() => this.clearHistory()}/>: null }
         </View>
       )
     }
@@ -210,9 +214,22 @@ export default class HomeScreen extends Component {
 
       // Renders a filter component
       filterFunction = () => {
+        // console.log(this.state.fall, this.state.spring, this.state.code, this.state.name)
         return  (
           <View style={styles.filterContainer}>
-            <Filter setSort={this.setSortState}  fetchCourses={this.fetchCourses} query={this.state.query} setQuery={this.setQuery} limit={this.state.limit} />
+            <Filter 
+              storeFilterState={this.storeFilterState} 
+              fetchCourses={this.fetchCourses} 
+              query={this.state.query} 
+              fall={this.state.fall}
+              spring={this.state.spring}
+              name={this.state.name}
+              code={this.state.code}
+              ordering={this.state.order}
+              filtering={this.state.filter}
+              sorting={this.state.sort}
+
+              />
           </View> )
       }
 
@@ -221,22 +238,22 @@ export default class HomeScreen extends Component {
     return (
       <View style={styles.container}>
         <View style={styles.searchContainer}>
-          <View style={{flexDirection: "row"}}>
-          <Icon name="bar-chart" size={35} color={"#FFCE00"}/> 
-          <Text h1 style={styles.header}>
-          {""}Courses
-          </Text>
+          <View style={{flexDirection: "row", alignItems: 'center', justifyContent: "space-between", marginTop: 5}}>
+            <Icon name="bar-chart" size={35} color={"#FFCE00"}/> 
+            {this.state.fontLoaded ? 
+              <Text h1 style={styles.header}>
+                COURSES
+              </Text>: null}
           </View>
-          <View style={{flexDirection: "row"}}>
-            <Icon name="search" size={14} color={"#C0CCD8"} style={{top: 5}}/> 
-            <Text style={styles.searchText}>
-               SEARCH FOR COURSE NAMES OR CODES...
-            </Text>
+          <View style={{flexDirection: "row", alignItems: 'center', justifyContent: "space-between"}}>
+            <Icon name="search" size={14} color={"#C0CCD8"} style={{right: 2}}/> 
+            {this.state.fontLoaded ? 
+              <Text style={styles.searchText}>
+                SEARCH FOR COURSE NAMES OR CODES
+              </Text>: null }
           </View>
-          
-           <SearchBar style={styles.searchbar} fetchCourses={this.fetchCourses} setQuery={this.setQuery} storeSearch={this.storeSearch}/>
+           <SearchBar style={styles.searchbar} storeSearch={this.storeSearch} storeFilterState={this.storeFilterState} fetchCourses={this.fetchCourses} setQuery={this.setQuery}/>
            {this.state.query !== "" ? 
-
               <TouchableOpacity
                 style={styles.button}
                 onPress={this.ShowHideComponent} >
@@ -256,7 +273,7 @@ export default class HomeScreen extends Component {
           onScroll={({nativeEvent}) => this.handleScroll(nativeEvent)} 
           contentContainerStyle={{alignItems: 'center', justifyContent: "space-between"}} 
         >
-          {this.state.query===''? ((this.state.mappedHistory.length>0)? this.showHistory() 
+          {this.state.query==='' && this.state.fontLoaded ? ((this.state.mappedHistory.length>0)? this.showHistory() 
                                   : <Text style={styles.search}>{this.state.defaultText}</Text>) 
                                   : this.mapCoursesToCard()}
           
@@ -285,12 +302,14 @@ const styles = StyleSheet.create({
       fontSize: 30,
       textAlign: 'center',
       color: "#FFCE00",
-      fontStyle: "italic"
+      fontFamily: 'oswald',
+      
     },
     searchText: {
+      fontFamily: 'oswald',
       color: "#C0CCD8",
       fontSize: 14,
-      margin: 5
+
     },
 
     instructions: {
