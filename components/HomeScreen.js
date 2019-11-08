@@ -40,7 +40,6 @@ export default class HomeScreen extends Component {
           filter: filtering,
           order: ordering,
         })
-        console.log("state: ",this.state.query, this.state.sort, this.state.filter, this.state.order)
       }
       setSortState = (code, name) => {
         this.setState({
@@ -56,7 +55,6 @@ export default class HomeScreen extends Component {
         this.setState({
           query: q
         })
-        console.log("-------- SET", q)
       }
     
     
@@ -113,7 +111,6 @@ export default class HomeScreen extends Component {
         .then(history => {
           (history == null) ? 
                 this.setState({searchHistory: []}) : this.setState({searchHistory: history})
-                // console.log("SEARCH HISTORY:", this.state.searchHistory)
                 this.mapHistory()
           }
 
@@ -127,7 +124,6 @@ export default class HomeScreen extends Component {
             tempArr = JSON.stringify(tempArr)
             await AsyncStorage.setItem("searchHistory", tempArr)
             this.setState({defaultText:''})
-            // console.log("STORED", text)
         }
         else{
           this.retrieveHistory()
@@ -137,7 +133,6 @@ export default class HomeScreen extends Component {
     clearHistory = () => {
       try {
          AsyncStorage.clear()
-        //  console.log("CLEARED")
          this.setState({searchHistory: [],
                         mappedHistory: '', 
                         defaultText: 'Search history cleared!'
@@ -149,6 +144,7 @@ export default class HomeScreen extends Component {
     }
 
     mapHistory =  () => {
+      
       this.setState({mappedHistory: this.state.searchHistory
                       .map((search, index) => 
                       <Button key={index}
@@ -156,13 +152,13 @@ export default class HomeScreen extends Component {
                           icon= {<Icon name="history" color="#c5c9d4" size={17} style={{right:7}}/>}
                           title={search}
                           titleStyle={{color:'#c5c9d4', fontStyle:'italic', textAlign: 'left'}}
-                          onPress={() => this.fetchCourses(search).then(this.setQuery(search))}
+                          onPress={() => this.fetchCourses(search, '','','1').then(this.setQuery(search))}
                       />)
       }) 
     }
 
       showHistory = () => {
-        return (
+        return ( 
         <View style={{alignItems: 'center', width:'120%', marginTop: 20}}>
           <Text style={{fontWeight: 'bold', fontSize: 22, color: '#FFFFFF'}}>
             Search history:
@@ -214,16 +210,17 @@ export default class HomeScreen extends Component {
            <SearchBar style={styles.searchbar} fetchCourses={this.fetchCourses} setQuery={this.setQuery} storeSearch={this.storeSearch}/>
            {this.state.query !== "" ? 
 
-           <TouchableOpacity
-          style={styles.button}
-          onPress={this.ShowHideComponent} >
-           {this.state.fontLoaded ? 
-           <Text style={styles.buttonText}>
-             {"FILTER"}
-          </Text>: null}
-        </TouchableOpacity>
-     
-        : null}
+              <TouchableOpacity
+                style={styles.button}
+                onPress={this.ShowHideComponent} >
+                {this.state.fontLoaded ? 
+                  <Text style={styles.buttonText}>
+                    {"FILTER"}
+                  </Text>: null
+                }
+              </TouchableOpacity>
+        
+            : null}
 
         {this.state.showFilter ? this.filterFunction() : null}
         </View>
@@ -232,7 +229,8 @@ export default class HomeScreen extends Component {
           onScroll={({nativeEvent}) => this.handleScroll(nativeEvent)} 
           contentContainerStyle={{alignItems: 'center', justifyContent: "space-between"}} 
         >
-          {this.state.query===''? ((this.state.mappedHistory.length>0)? this.showHistory() : <Text style={styles.search}>{this.state.defaultText}</Text>) 
+          {this.state.query===''? ((this.state.mappedHistory.length>0)? this.showHistory() 
+                                  : <Text style={styles.search}>{this.state.defaultText}</Text>) 
                                   : this.mapCoursesToCard()}
           
         </ScrollView>
@@ -316,10 +314,3 @@ const styles = StyleSheet.create({
       
     }
   });
-
- 
-//  const AppNavigator = createStackNavigator(
-//     {
-//       Home: HomeScreen,
-//     }
-//   );
