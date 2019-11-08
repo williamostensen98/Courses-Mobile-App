@@ -65,6 +65,7 @@ export default class HomeScreen extends Component {
         })
       }
      
+      //Updates the state 'query'
       setQuery = (q) => {
         this.setState({
           query: q
