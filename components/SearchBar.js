@@ -3,19 +3,18 @@ import {TextInput, StyleSheet } from 'react-native'
 
 
 
-
 export default function SearchBar(props) {
    
     return(
-            <TextInput 
-                style={styles.search}
-                placeholder={"Search..."}
-                onSubmitEditing={(event) => props.fetchCourses(event.nativeEvent.text, "", "", "1")
-                                            .then(props.setQuery(event.nativeEvent.text))
-                                            .then(props.storeSearch(event.nativeEvent.text))}
-                autoFocus={true}    
-            />
-        
+        <TextInput 
+            style={styles.search}
+            placeholder={"Search..."}
+            onSubmitEditing={(event) => props.fetchCourses(event.nativeEvent.text, "", "", "1")
+                                        .then(props.setQuery(event.nativeEvent.text))
+                                        .then( props.storeFilterState(false, false, false, true))
+                                        .then(props.storeSearch(event.nativeEvent.text))}
+            autoFocus={true}
+        />
     )
 
 
