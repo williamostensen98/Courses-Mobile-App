@@ -17,7 +17,7 @@ export default class HomeScreen extends Component {
         total: 0,
         searchHistory: [],
         mappedHistory: '',
-        defaultText: null,
+        defaultText: '',
         hasSearched: false,
       }
     
@@ -103,7 +103,7 @@ export default class HomeScreen extends Component {
             tempArr.unshift(text);
             tempArr = JSON.stringify(tempArr)
             await AsyncStorage.setItem("searchHistory", tempArr)
-            this.setState({defaultText: null})
+            this.setState({defaultText:''})
             // console.log("STORED", text)
         }
         else{
@@ -117,7 +117,7 @@ export default class HomeScreen extends Component {
         //  console.log("CLEARED")
          this.setState({searchHistory: [],
                         mappedHistory: '', 
-                        defaultText: <Text style={styles.search}>Search history cleared!</Text>
+                        defaultText: 'Search history cleared!'
                       })
       }
       catch(error){
@@ -130,11 +130,10 @@ export default class HomeScreen extends Component {
                       .map((search, index) => 
                       <Button key={index}
                           type="clear"
-                          // buttonStyle={{alignItems: 'stretch'}}
                           icon= {<Icon name="history" color="#c5c9d4" size={17} style={{right:7}}/>}
                           title={search}
                           titleStyle={{color:'#c5c9d4', fontStyle:'italic', textAlign: 'left'}}
-                          onPress={() => this.fetchCourses(search).then(this.setQuery(search)).then(console.log("PRESSED", search))}
+                          onPress={() => this.fetchCourses(search).then(this.setQuery(search))}
                       />)
       }) 
     }
@@ -145,7 +144,7 @@ export default class HomeScreen extends Component {
           <Text style={{fontWeight: 'bold', fontSize: 22, color: '#FFFFFF'}}>
             Search history:
           </Text>
-          <View style={{alignItems: 'left', width: Dimensions.get('window').width*0.69, marginTop: 10}}>
+          <View style={{alignItems: 'flex-start', width: Dimensions.get('window').width*0.69, marginTop: 10}}>
             {this.state.mappedHistory}
           </View>
           <Button type="clear" 
@@ -182,10 +181,9 @@ export default class HomeScreen extends Component {
           onScroll={({nativeEvent}) => this.handleScroll(nativeEvent)} 
           contentContainerStyle={{alignItems: 'center', justifyContent: "space-between"}} 
         >
-          {this.state.query===''? ((this.state.mappedHistory.length>0)? this.showHistory() : this.state.defaultText) 
+          {this.state.query===''? ((this.state.mappedHistory.length>0)? this.showHistory() : <Text style={styles.search}>{this.state.defaultText}</Text>) 
                                   : this.mapCoursesToCard()}
           
-
         </ScrollView>
       </View>
     ); 
