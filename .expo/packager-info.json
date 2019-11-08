@@ -1,9 +1,9 @@
 {
   "expoServerPort": 19000,
-  "expoServerNgrokUrl": "https://w7-hp6.anonymous.prosjekt-4.exp.direct",
-  "packagerNgrokUrl": "https://packager.w7-hp6.anonymous.prosjekt-4.exp.direct",
-  "ngrokPid": 41785,
+  "expoServerNgrokUrl": null,
+  "packagerNgrokUrl": null,
+  "ngrokPid": null,
   "devToolsPort": 19002,
   "packagerPort": 19001,
-  "packagerPid": 41774
+  "packagerPid": 37748
 }
