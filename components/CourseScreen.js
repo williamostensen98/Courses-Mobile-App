@@ -9,9 +9,6 @@ import Hr from "react-native-hr-component";
 
 export default class CourseScreen extends Component {
 
-    static navigationOptions = {
-      
-    };
 
     averageDifficulty() {
       const course = this.props.navigation.getParam('course')
