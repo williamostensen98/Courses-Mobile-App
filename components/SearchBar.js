@@ -2,10 +2,8 @@ import React from 'react'
 import {TextInput, StyleSheet } from 'react-native'
 
 
-
-
+// Simple functional components to render in HomeScreen. Uses methods sent as props to fetch results for a given search.
 export default function SearchBar(props) {
-   
     return(
             <TextInput 
                 style={styles.search}
@@ -14,13 +12,8 @@ export default function SearchBar(props) {
                                             .then(props.setQuery(event.nativeEvent.text))
                                             .then(props.storeSearch(event.nativeEvent.text))}
                 autoFocus={true}    
-            />
-        
-    )
-
-
-   
-    
+            />   
+    )    
 }
 
 
@@ -28,7 +21,6 @@ const styles = StyleSheet.create({
     search: {
         fontSize: 20,
         margin: 10,
-        // marginBottom: 20,
         paddingLeft: 10,
         height: 40,
         width: '95%',

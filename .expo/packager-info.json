@@ -1,8 +1,8 @@
 {
-  "expoServerPort": null,
-  "expoServerNgrokUrl": null,
-  "packagerNgrokUrl": null,
-  "ngrokPid": null,
+  "expoServerPort": 19000,
+  "expoServerNgrokUrl": "https://zk-wh5.anonymous.prosjekt4.exp.direct",
+  "packagerNgrokUrl": "https://packager.zk-wh5.anonymous.prosjekt4.exp.direct",
+  "ngrokPid": 66612,
   "devToolsPort": 19002,
   "packagerPort": null,
   "packagerPid": null

@@ -8,6 +8,10 @@ import { throwStatement } from '@babel/types';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 
+// Homescreen component is the landing screen in the app. Can be considered as App.js in a normal React Web application.cover-empty.
+// Navigationstack and options is located in Navigation.js.
+// 
+
 export default class HomeScreen extends Component {
    
    
@@ -27,20 +31,30 @@ export default class HomeScreen extends Component {
         order: "",
       }
     
+
+      // Fetches courses from REST API
+      // All queries to the API can be made by sending a GET reques to the URL underneath followed by ? and a query. Query on the form q=course_code=TDT&&taught_in_autumn=1
       fetchCourses = async (q="", sorting, filtering, ordering) => {
         const courses = await fetch("http://it2810-39.idi.ntnu.no:3001/courses?" + q + sorting + filtering + "&order=" + ordering)
         .then(res => res.json())
         .catch(err => console.log(err))
-        this.setState({
-          courses: courses.docs, 
-          limit: courses.limit,
-          total: courses.total,
-          sort: sorting, 
-          filter: filtering,
-          order: ordering,
-          hasSearched: true
-        })
+        try {
+          this.setState({
+            courses: courses.docs, 
+            limit: courses.limit,
+            total: courses.total,
+            sort: sorting, 
+            filter: filtering,
+            order: ordering,
+            hasSearched: true
+          })
+        }
+        catch(err) {
+          console.log(err)
+        }
       }
+
+      // Method for applying sorting/filtering
       setSortState = (code, name) => {
         this.setState({
           sort: {
@@ -50,6 +64,7 @@ export default class HomeScreen extends Component {
         })
       }
 
+      // Classic set method
       setQuery = (q) => {
         
         this.setState({
@@ -57,7 +72,7 @@ export default class HomeScreen extends Component {
         })
       }
     
-    
+    // Fetch courses on mount and retrieve search history from AsyncStorage
       async componentDidMount() {
         this.fetchCourses()
         this.retrieveHistory()
@@ -67,6 +82,8 @@ export default class HomeScreen extends Component {
         this.setState({ fontLoaded: true });
       }
 
+      // Returns a liste of Card-components, each representning a course in the list view on homescreen. Can be clicked to navigate to the CourseScreen for that course.
+      // If no courses is found, method returns Text-component saying the search gave no results. In all other cases returns null.
       mapCoursesToCard() {
         if (this.state.courses != null) {
           let courseList = this.state.courses.map((course, index) => 
@@ -96,6 +113,7 @@ export default class HomeScreen extends Component {
         
       }
     
+      // Helper-method to implement infinite scroll
       handleScroll = nativeEvent => {
         if (this.isCloseToBottom(nativeEvent) && (this.state.limit < this.state.total)) {       
           this.setState(
@@ -108,7 +126,7 @@ export default class HomeScreen extends Component {
         return layoutMeasurement.height + contentOffset.y >= contentSize.height - 50;
       }
     
-
+      // Retreive search history from AsyncStorage
     retrieveHistory = async () =>{
       // Query local history
       AsyncStorage.getItem("searchHistory").then(history => JSON.parse(history))
@@ -133,7 +151,7 @@ export default class HomeScreen extends Component {
           this.retrieveHistory()
         }
     }
-
+    // Clears the search history from AsyncStorage
     clearHistory = () => {
       try {
          AsyncStorage.clear()
@@ -147,6 +165,7 @@ export default class HomeScreen extends Component {
       }
     }
 
+    // Maps previous searches in AsyncStorage to a list of buttons.
     mapHistory =  () => {
       
       this.setState({mappedHistory: this.state.searchHistory
@@ -161,6 +180,8 @@ export default class HomeScreen extends Component {
       }) 
     }
 
+
+    // Render method to show search history
       showHistory = () => {
         return ( 
         <View style={{alignItems: 'center', width:'120%', marginTop: 20}}>
@@ -178,15 +199,16 @@ export default class HomeScreen extends Component {
       )
     }
       
-      
+      // Flips the state of wheter to show filtering component or not. 
       ShowHideComponent = () => {
-        
         if (this.state.showFilter === true) {
           this.setState({showFilter : false });
         } else {
           this.setState({ showFilter : true });
         }
       };
+
+      // Renders a filter component
       filterFunction = () => {
         return  (
           <View style={styles.filterContainer}>
@@ -211,6 +233,7 @@ export default class HomeScreen extends Component {
                SEARCH FOR COURSE NAMES OR CODES...
             </Text>
           </View>
+          
            <SearchBar style={styles.searchbar} fetchCourses={this.fetchCourses} setQuery={this.setQuery} storeSearch={this.storeSearch}/>
            {this.state.query !== "" ? 
 
@@ -244,7 +267,7 @@ export default class HomeScreen extends Component {
 }
 
 
-
+// Styling for all components in this file
 const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -284,7 +307,7 @@ const styles = StyleSheet.create({
       color: "#FFFFFF"
     },
     search: {
-      color: "#FFFFFF",
+      color: "#C0CCD8",
       fontSize: 18,
       marginTop: 100,
     },
@@ -320,6 +343,7 @@ const styles = StyleSheet.create({
     },
     noresult: {
       marginTop: 30,
-      color: "#C0CCD8"
+      color: "#C0CCD8",
+      fontSize: 18
     }
   });

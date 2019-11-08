@@ -5,14 +5,12 @@ import { createStackNavigator } from 'react-navigation-stack';
 import Hr from "react-native-hr-component";
 
 
-
+// CourseScreen component is the screen you are navigated to if you click a Course card from the HomeScreen. 
+// Takes in a course-object as a props to render the course data correctly.
 
 export default class CourseScreen extends Component {
 
-    static navigationOptions = {
-      
-    };
-
+// Calculates average difficulty for a course if there are any ratings. Otherwise returns no reviews yet to the screen.
     averageDifficulty() {
       const course = this.props.navigation.getParam('course')
       let length = course.difficulty.length;
@@ -64,10 +62,10 @@ export default class CourseScreen extends Component {
     }
 }
 
+// CSS for all components in this file
+
 const styles = StyleSheet.create({
     container: {
-      // justifyContent: 'center',
-      // alignItems: 'center',
       backgroundColor: '#3b3f4b',
       flexGrow: 1,
     },
