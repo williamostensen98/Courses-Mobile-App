@@ -13,6 +13,7 @@ export default function SearchBar(props) {
                                         .then(props.storeSearch(event.nativeEvent.text))}       //stores the query in AsyncStorage
             autoFocus={true}            // Automatically focuses on the search bar. User does not need to select it before writing
             returnKeyType={'search'}    // Changes the bottom right button on keyboard to "search" instead of "return"
+            placeholderTextColor={"#737373"}
         />   
     )
 }
@@ -25,8 +26,7 @@ const styles = StyleSheet.create({
         paddingLeft: 10,
         height: 40,
         width: '95%',
-        color: "#000000",
         backgroundColor: "#C0CCD8",
-        borderRadius: 10,
-    },
+        borderRadius: 15,
+    }
 })

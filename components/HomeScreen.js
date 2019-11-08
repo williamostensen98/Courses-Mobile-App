@@ -261,7 +261,7 @@ export default class HomeScreen extends Component {
                 onPress={this.ShowHideComponent} >
                 {this.state.fontLoaded ? 
                   <Text style={styles.buttonText}>
-                    {"FILTER"}
+                    {!this.state.showFilter ? "FILTER" : "SHOW RESULTS"}
                   </Text>: null
                 }
               </TouchableOpacity>
