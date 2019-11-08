@@ -25,28 +25,27 @@ export default class HomeScreen extends Component {
         total: 0,
         fontLoaded: false,
         showFilter: false,
-        sort : {
-          codeClicked: false, 
-          nameClicked: true, 
-        }, 
+        sort:"",
         filter: "",
+        order: "",
         hasSearched: false,
       }
     
-      fetchCourses = async (q="", sorting, filtering) => {
-        const courses = await fetch("http://it2810-39.idi.ntnu.no:3001/courses?" + q + sorting + filtering)
+      fetchCourses = async (q="", sorting, filtering, ordering) => {
+        const courses = await fetch("http://it2810-39.idi.ntnu.no:3001/courses?" + q + sorting + filtering + "&order=" + ordering)
         .then(res => res.json())
         .catch(err => console.log(err))
-        // console.log("Type of courses: ", courses.docs)
+        console.log("input: ",sorting, filtering, ordering)
         this.setState({
           courses: courses.docs, 
           limit: courses.limit,
           total: courses.total,
           sort: sorting, 
           filter: filtering,
+          order: ordering,
           hasSearched: true
         })
-        console.log(this.state.query, this.state.sort, this.state.filter)
+        console.log("state: ",this.state.query, this.state.sort, this.state.filter, this.state.order)
       }
       setSortState = (code, name) => {
         this.setState({
@@ -102,7 +101,7 @@ export default class HomeScreen extends Component {
         if (this.isCloseToBottom(nativeEvent) && (this.state.limit < this.state.total)) {       
           this.setState(
             prevState => ({limit: prevState.limit+=10}))
-            this.fetchCourses(this.state.query + "&limit=" + this.state.limit,this.state.sort,this.state.filter)
+            this.fetchCourses(this.state.query + "&limit=" + this.state.limit,this.state.sort,this.state.filter, this.state.order)
         }
       }
       
@@ -145,16 +144,19 @@ export default class HomeScreen extends Component {
             </Text>
           </View>
            <SearchBar style={styles.searchbar} fetchCourses={this.fetchCourses} setQuery={this.setQuery}/>
+           {this.state.query !== "" ? 
+
            <TouchableOpacity
-          
           style={styles.button}
-          onPress={this.ShowHideComponent}
-        >
+          onPress={this.ShowHideComponent} >
            {this.state.fontLoaded ? 
            <Text style={styles.buttonText}>
              {"FILTER"}
           </Text>: null}
         </TouchableOpacity>
+     
+        : null}
+
         {this.state.showFilter ? this.filterFunction() : null}
         </View>
         <ScrollView 
@@ -237,9 +239,9 @@ const styles = StyleSheet.create({
     }, 
     filterContainer: {
       width: "100%", 
-      height: "85%", 
+      height: "95%", 
       backgroundColor: "#ffce00",
-      marginTop: 0,
+      marginTop: 15,
       
     }
   });
