@@ -38,6 +38,7 @@ export default class HomeScreen extends Component {
           sort: sorting, 
           filter: filtering,
           order: ordering,
+          hasSearched: true
         })
       }
       setSortState = (code, name) => {
@@ -86,7 +87,8 @@ export default class HomeScreen extends Component {
             </TouchableOpacity>
           )
         if (this.state.hasSearched && this.state.courses.length == 0) {
-            return <Text>Your search gave no results</Text>
+          console.log("HEI")
+            return <Text style={styles.noresult}>Your search gave no results</Text>
         }
         return courseList
         }
@@ -313,6 +315,9 @@ const styles = StyleSheet.create({
       height: "95%", 
       backgroundColor: "#ffce00",
       marginTop: 15,
-      
+    },
+    noresult: {
+      marginTop: 30,
+      color: "#C0CCD8"
     }
   });
