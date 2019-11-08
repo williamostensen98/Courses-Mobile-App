@@ -1,5 +1,5 @@
 import React from 'react'
-import {TextInput, StyleSheet} from 'react-native'
+import {TextInput, StyleSheet } from 'react-native'
 
 
 
@@ -11,10 +11,14 @@ export default function SearchBar(props) {
             placeholder={"Search..."}
             onSubmitEditing={(event) => props.fetchCourses(event.nativeEvent.text, "", "", "1")
                                         .then(props.setQuery(event.nativeEvent.text))
-                                        .then( props.storeFilterState(false, false, false, true))}
+                                        .then( props.storeFilterState(false, false, false, true))
+                                        .then(props.storeSearch(event.nativeEvent.text))}
             autoFocus={true}
         />
     )
+
+
+   
     
 }
 
@@ -26,7 +30,7 @@ const styles = StyleSheet.create({
         // marginBottom: 20,
         paddingLeft: 10,
         height: 40,
-        width: '85%',
+        width: '95%',
         color: "#000000",
         backgroundColor: "#C0CCD8",
         borderRadius: 10,

@@ -1,8 +1,6 @@
 import React, {Component} from 'react';
-import { View, Text, StyleSheet, Button, ScrollView, TouchableOpacity, Header, Dimensions} from 'react-native';
-import {Card} from "react-native-elements"
-import { createAppContainer } from 'react-navigation';
-import { createStackNavigator } from 'react-navigation-stack';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, AsyncStorage, Dimensions} from 'react-native';
+import {Card, Button} from "react-native-elements"
 import SearchBar from './SearchBar';
 import * as Font from 'expo-font';
 import Filter from './Filter'
@@ -12,17 +10,16 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 
 export default class HomeScreen extends Component {
    
-
-      
-    static navigationOptions = {
-      
-      };
+   
 
     state = {
         query: '',
         courses: null,
         limit: 10,
         total: 0,
+        searchHistory: [],
+        mappedHistory: '',
+        defaultText: '',
         fontLoaded: false,
         showFilter: false,
         sort:"&sorting=norwegian_name",
@@ -39,7 +36,6 @@ export default class HomeScreen extends Component {
         const courses = await fetch("http://it2810-39.idi.ntnu.no:3001/courses?" + q + sorting + filtering + "&order=" + ordering)
         .then(res => res.json())
         .catch(err => console.log(err))
-        console.log("input: ",sorting, filtering, ordering)
         this.setState({
           courses: courses.docs, 
           limit: courses.limit,
@@ -49,7 +45,6 @@ export default class HomeScreen extends Component {
           order: ordering,
           hasSearched: true
         })
-        console.log("state: ",this.state.query, this.state.sort, this.state.filter, this.state.order)
       }
       storeFilterState = (f, s, c, n) => {
         console.log(f, s, c, n)
@@ -71,12 +66,13 @@ export default class HomeScreen extends Component {
     
       async componentDidMount() {
         this.fetchCourses()
+        this.retrieveHistory()
         await Font.loadAsync({
           'oswald': require('./../assets/fonts/Oswald.ttf'),
         });
         this.setState({ fontLoaded: true });
       }
-    
+
       mapCoursesToCard() {
         if (this.state.courses != null) {
           let courseList = this.state.courses.map((course, index) => 
@@ -96,6 +92,10 @@ export default class HomeScreen extends Component {
             </Card>
             </TouchableOpacity>
           )
+        if (this.state.hasSearched && this.state.courses.length == 0) {
+          console.log("HEI")
+            return <Text style={styles.noresult}>Your search gave no results</Text>
+        }
         return courseList
         }
         return null
@@ -110,11 +110,80 @@ export default class HomeScreen extends Component {
         }
       }
       
-      
-    
       isCloseToBottom({ layoutMeasurement, contentOffset, contentSize }) {   
         return layoutMeasurement.height + contentOffset.y >= contentSize.height - 50;
       }
+    
+
+    retrieveHistory = async () =>{
+      // Query local history
+      AsyncStorage.getItem("searchHistory").then(history => JSON.parse(history))
+        .then(history => {
+          (history == null) ? 
+                this.setState({searchHistory: []}) : this.setState({searchHistory: history})
+                this.mapHistory()
+          }
+
+      )
+    }
+    // save the search tag
+    storeSearch = async (text) => {
+          if(text!=='') {
+            let tempArr = this.state.searchHistory;
+            tempArr.unshift(text);
+            tempArr = JSON.stringify(tempArr)
+            await AsyncStorage.setItem("searchHistory", tempArr)
+            this.setState({defaultText:''})
+        }
+        else{
+          this.retrieveHistory()
+        }
+    }
+
+    clearHistory = () => {
+      try {
+         AsyncStorage.clear()
+         this.setState({searchHistory: [],
+                        mappedHistory: '', 
+                        defaultText: 'Search history cleared!'
+                      })
+      }
+      catch(error){
+        console.log(error)
+      }
+    }
+
+    mapHistory =  () => {
+      
+      this.setState({mappedHistory: this.state.searchHistory
+                      .map((search, index) => 
+                      <Button key={index}
+                          type="clear"
+                          icon= {<Icon name="history" color="#c5c9d4" size={17} style={{right:7}}/>}
+                          title={search}
+                          titleStyle={{color:'#c5c9d4', fontStyle:'italic', textAlign: 'left'}}
+                          onPress={() => this.fetchCourses(search, '','','1').then(this.setQuery(search))}
+                      />)
+      }) 
+    }
+
+      showHistory = () => {
+        return ( 
+        <View style={{alignItems: 'center', width:'120%', marginTop: 20}}>
+          <Text style={{fontWeight: 'bold', fontSize: 22, color: '#FFFFFF'}}>
+            Search history:
+          </Text>
+          <View style={{alignItems: 'flex-start', width: Dimensions.get('window').width*0.69, marginTop: 10}}>
+            {this.state.mappedHistory}
+          </View>
+          <Button type="clear" 
+                  titleStyle={{color:'#FFCE00', fontWeight: 'bold', fontSize: 20}} 
+                  title={"Clear search history"} 
+                  onPress={() => this.clearHistory()}/>
+        </View>
+      )
+    }
+      
       
       ShowHideComponent = () => {
         
@@ -145,7 +214,7 @@ export default class HomeScreen extends Component {
       }
 
   render() {
-
+ 
     return (
       <View style={styles.container}>
         <View style={styles.searchContainer}>
@@ -161,19 +230,20 @@ export default class HomeScreen extends Component {
                SEARCH FOR COURSE NAMES OR CODES...
             </Text>
           </View>
-           <SearchBar style={styles.searchbar} storeFilterState={this.storeFilterState} fetchCourses={this.fetchCourses} setQuery={this.setQuery}/>
+           <SearchBar style={styles.searchbar} storeSearch={this.storeSearch} storeFilterState={this.storeFilterState} fetchCourses={this.fetchCourses} setQuery={this.setQuery}/>
            {this.state.query !== "" ? 
 
-           <TouchableOpacity
-          style={styles.button}
-          onPress={this.ShowHideComponent} >
-           {this.state.fontLoaded ? 
-           <Text style={styles.buttonText}>
-             {"FILTER"}
-          </Text>: null}
-        </TouchableOpacity>
-     
-        : null}
+              <TouchableOpacity
+                style={styles.button}
+                onPress={this.ShowHideComponent} >
+                {this.state.fontLoaded ? 
+                  <Text style={styles.buttonText}>
+                    {"FILTER"}
+                  </Text>: null
+                }
+              </TouchableOpacity>
+        
+            : null}
 
         {this.state.showFilter ? this.filterFunction() : null}
         </View>
@@ -182,11 +252,13 @@ export default class HomeScreen extends Component {
           onScroll={({nativeEvent}) => this.handleScroll(nativeEvent)} 
           contentContainerStyle={{alignItems: 'center', justifyContent: "space-between"}} 
         >
-          {this.mapCoursesToCard()}
-
+          {this.state.query===''? ((this.state.mappedHistory.length>0)? this.showHistory() 
+                                  : <Text style={styles.search}>{this.state.defaultText}</Text>) 
+                                  : this.mapCoursesToCard()}
+          
         </ScrollView>
       </View>
-    );
+    ); 
   }
 }
 
@@ -227,14 +299,16 @@ const styles = StyleSheet.create({
     },
     courseText : {
       color: "#FFFFFF"
-    }, 
+    },
+    search: {
+      color: "#FFFFFF",
+      fontSize: 18,
+      marginTop: 100,
+    },
     searchContainer: {
       alignItems: 'center',
       justifyContent: 'center',
       width: "100%"
-    },
-    searchbar: {
-      
     },
     button: {
       backgroundColor: "#ffce00",
@@ -260,12 +334,9 @@ const styles = StyleSheet.create({
       height: "95%", 
       backgroundColor: "#ffce00",
       marginTop: 15,
-      
+    },
+    noresult: {
+      marginTop: 30,
+      color: "#C0CCD8"
     }
   });
-
-  const AppNavigator = createStackNavigator(
-    {
-      Home: HomeScreen,
-    }
-  );
