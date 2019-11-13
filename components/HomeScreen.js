@@ -203,10 +203,15 @@ export default class HomeScreen extends Component {
             {this.state.mappedHistory}
           </View>
           {this.state.fontLoaded ? 
-            <Button type="clear" 
-                    titleStyle={{color:'#FFCE00', fontWeight: 'bold', fontSize: 22, fontFamily: 'oswald'}} 
-                    title={"Clear search history"} 
-                    onPress={() => this.clearHistory()}/>
+            <TouchableOpacity style={{marginTop: 20, backgroundColor: '#ffce00', borderRadius: 5, width:'80%'}} 
+            type="clear"       
+            onPress={() => this.clearHistory()}>
+             {this.state.fontLoaded ? 
+            <Text style={styles.buttonText}>
+                 Clear Search History
+            </Text> : null}
+            </TouchableOpacity>
+
           : null }
         </View>
       )
@@ -243,7 +248,7 @@ export default class HomeScreen extends Component {
       }
       handleHomePress = () => {
         this.setQuery('')
-        
+
         this.retrieveHistory()
         this.fetchCourses('', '','','1')
       }
