@@ -5,6 +5,16 @@ import { Icon } from 'react-native-elements'
 
 const Filter  = (props) => {
 
+
+    /*Storing all states by the use of the useState-hook.
+      The first elements thats in the array are set as default to the values inside the useState() function. 
+      The states are also assigned a set-method to change the state-variable. 
+
+      All default values here are sent as props from HomeScreen.js
+      This is because everytime HomeScreen is rendered, the Filter-component is rerendered and set back to default state
+      Therefor by storing the same states in HomeScreen.js and sending them as props to this component we keep all states 
+      even if the component is rerendered.
+    */
     const [fallClicked, setFallClicked] = useState(props.fall);
     const [springClicked, setSpringClicked] = useState(props.spring);
     const [codeClicked, setCodeClicked] = useState(props.code);
@@ -13,23 +23,20 @@ const Filter  = (props) => {
     const [filterBy, setFilter]= useState(props.filtering);
     const [sortBy, setSorting] = useState(props.sorting);
 
-    useEffect(() => {
-        let a = nameClicked ? 'NAME': 'CODE'
-        handleSortChange(a,true);
+    // useEffect(() => {
+    //     let a = nameClicked ? 'NAME': 'CODE'
+    //     handleSortChange(a,true);
        
-      }, [order]); // Only re-run the effect if order changes
+    //   }, [order]); // Only re-run the effect if order changes
 
-    const fetchNewCourses = (sort, filter, ordering) =>{
-       console.log(filter, sort)
-       console.log(sortBy)
-
-      props.fetchCourses(props.query, sort, filter, ordering)
-        
-        
-        
+    const fetchNewCourses = (sort, filter, ordering) =>{              // fetcCourses takes in sort, filtering and ordering 
+      props.fetchCourses(props.query, sort, filter, ordering)         // and uses the method from HomeScreen to fetch the new courses
+                                                                      // with the correct filter- and sort-queries.
     }
 
-   
+    // Is called when det order-button is pressed and following changes the order of the dataset
+    // It sets the order-state to the opposite of what it was and then fires a new fetchCourses with 
+    // the sorting-and filter-query stored in state and the new order
     const handleOrderChange = () => {
        
         if(order === '1'){
@@ -43,6 +50,8 @@ const Filter  = (props) => {
         }
     }
    
+    // This method is called when the 'ALL' button is clicked which resets the filter buttons
+    // and fetches courses without the filter queries.
     const handleAllClicked = () => {
       props.storeFilterState(false,false, codeClicked, nameClicked)
       setSpringClicked(false)
@@ -50,6 +59,11 @@ const Filter  = (props) => {
       fetchNewCourses(sortBy, "", order)
       setFilter("")
     }
+
+    // As name of the mathod says, this method handles if it notices a change in the filtering buttons. 
+    // It checks if it is the fall or spring button that is clicked ansd fetches courses coherently
+    // It then stores the filterchange in the state in HomeScreen.js (see storeFilterState-method)
+    // and sets the filter-states correctly
    const handleFilterChange = (param) => {
      if(param === 'FALL'){
        
@@ -70,11 +84,15 @@ const Filter  = (props) => {
 
    }
    
-    const handleSortChange = (param, orderChanged) =>{
+
+   // This works in the same way as the handleFilterchange-method. 
+   // It takes in a parameter which is either CODE or NAME and fetches new courses and sets state correctly
+   // after whoch button is clicked.
+    const handleSortChange = (param) =>{
         
         switch(param) {
           case 'CODE':
-            if(!codeClicked || orderChanged){
+            if(!codeClicked){
               let c = "&sorting=course_code"
               fetchNewCourses(c, filterBy, order)
               props.storeFilterState(fallClicked,springClicked, true, false)
@@ -89,7 +107,7 @@ const Filter  = (props) => {
 
           case 'NAME':
             
-            if(!nameClicked || orderChanged){
+            if(!nameClicked){
               let n = "&sorting=norwegian_name"
               fetchNewCourses(n, filterBy, order)
               props.storeFilterState(fallClicked,springClicked, false, true)
@@ -108,24 +126,28 @@ const Filter  = (props) => {
      
     }
     return (
+      // The style on all buttons are changed by if it is clicked or not
+      // If it is clicked it has the clicked style, if not it has button style. 
+      // The same goes for the icons and text
        <View style={styles.container}>
         <View>
           <Text style={styles.text}>SORT BY</Text>
             <View style={styles.sortingContainer}>
                 <View style={{flexDirection: 'column'}}>
-                    <TouchableOpacity style={codeClicked ? styles.clicked: styles.button} onPress={() => handleSortChange('CODE', false)} >
+                
+                    <TouchableOpacity style={codeClicked ? styles.clicked: styles.button} onPress={() => handleSortChange('CODE')} >
                         
                            <Icon
                             name='code'
                             type='feather'
-                            color={codeClicked ? '#ffce00' : '#000000'}
+                            color={codeClicked ? '#ffce00' : '#000000'} 
                           />
                     </TouchableOpacity>
                     <Text style={styles.iconText}>CODE</Text>
                 </View>
             
                 <View style={{flexDirection: 'column'}}>
-                    <TouchableOpacity style={nameClicked ? styles.clicked: styles.button} onPress={() => handleSortChange('NAME', false)} >
+                    <TouchableOpacity style={nameClicked ? styles.clicked: styles.button} onPress={() => handleSortChange('NAME')} >
                         <Text style={nameClicked ? styles.clickedIcon: styles.iconText} >{order === '-1' ? 'Z-A': 'A-Z'}</Text>
                     </TouchableOpacity>
                     <Text style={styles.iconText} >NAME</Text>

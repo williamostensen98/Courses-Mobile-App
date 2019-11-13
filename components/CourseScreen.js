@@ -3,6 +3,7 @@ import {View, Text, StyleSheet, ScrollView, Button} from "react-native";
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import Hr from "react-native-hr-component";
+import * as Font from 'expo-font';
 
 
 // CourseScreen component is the screen you are navigated to if you click a Course card from the HomeScreen. 
@@ -10,6 +11,18 @@ import Hr from "react-native-hr-component";
 
 export default class CourseScreen extends Component {
 
+    state = {
+      fontLoaded: false,
+    }
+
+    async componentDidMount() {
+      await Font.loadAsync({ // loads the font 'oswald' (found in assest-folder) and sets the fontLoaded state to true when finished
+        'oswald': require('./../assets/fonts/Oswald.ttf'),
+        'lato': require('./../assets/fonts/Lato-Regular.ttf'),
+        'lato-bold': require('./../assets/fonts/Lato-Bold.ttf'),  
+      });
+      this.setState({ fontLoaded: true });
+    }
 // Calculates average difficulty for a course if there are any ratings. Otherwise returns no reviews yet to the screen.
     averageDifficulty() {
       const course = this.props.navigation.getParam('course')
@@ -27,36 +40,43 @@ export default class CourseScreen extends Component {
     render() {
         const course = this.props.navigation.getParam('course')
         return(
+          
           <View style={styles.container}>
+          {this.state.fontLoaded ? 
           <ScrollView >
+          
               <Text style={styles.headline}> {course.norwegian_name} </Text>
               <Hr 
                 text={" " + course.course_code + " "}
                 textStyles={{color: "#C0CCD8", fontSize: 16}}
                 lineColor={"#C0CCD8"}
               />
+              
               <Text style={styles.text}>
-                <Text style={{fontWeight: "bold"}}>
+                <Text style={{fontFamily: 'lato-bold'}}>
                   Credits: {""}
+                  
                 </Text>
-                {course.credits +"\n"} 
-                <Text style={{fontWeight: "bold"}}>
+                {course.credits  + "p" +"\n\n"} 
+                <Text style={{fontFamily: 'lato-bold'}}>
+                  
                   Taught in: {""}
                 </Text>
-                {course.taught_in_autumn & course.taught_in_spring? "Fall & Spring \n" : course.taught_in_autumn ? "Fall \n" : "Spring \n"}
+                {course.taught_in_autumn & course.taught_in_spring? "Fall & Spring \n\n" : course.taught_in_autumn ? "Fall \n\n" : "Spring \n\n"}
                 
-                <Text style={{fontWeight: "bold"}}>
+                <Text style={{fontFamily: 'lato-bold'}}>
                   Content: {""}
                 </Text>
-                {course.content + "\n"}
-                <Text style={{fontWeight: "bold"}}>
+                {"\n" + course.content + "\n\n"}
+                <Text style={{fontFamily: 'lato-bold'}}>
                   Average difficulty: {""}
                 </Text>
-                {(this.averageDifficulty()) + "\n"}
+                {(this.averageDifficulty()) + "\n\n"}
               </Text>
+              
 
 
-          </ScrollView>
+          </ScrollView>: null }
         </View>
         )
     }
@@ -72,14 +92,16 @@ const styles = StyleSheet.create({
     headline: {
       fontSize: 30,
       textAlign: 'center',
-      fontWeight: "bold",
+      fontFamily: 'oswald',
       margin: 15,
       color: "#FFCE00"
     },
     text: {
       color: "#C0CCD8",
       fontSize: 20,
-      margin: 20
+      margin: 20,
+      fontFamily: 'lato'
+      
 
     },
     instructions: {

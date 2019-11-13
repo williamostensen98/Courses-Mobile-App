@@ -56,6 +56,13 @@ export default class HomeScreen extends Component {
           console.log(err)
         }
       }
+
+      // This method stores all states that is sent from the filtering component
+      // Since redux is not used in this project we need to store sll states that is needed in children component 
+      // in the parent-component which is this class. This is so we dont loose the states when the parent component is rendered
+      // and the children component gets re-rendered with it. 
+      // States are therefore sent from the Filter-component to this class which is its parent and then sent back to Filter 
+      // through the filterFunction() (see further down).
       storeFilterState = (f, s, c, n) => {
         this.setState({
           fall: f, 
@@ -76,7 +83,7 @@ export default class HomeScreen extends Component {
       async componentDidMount() {
         this.fetchCourses()
         this.retrieveHistory()
-        await Font.loadAsync({
+        await Font.loadAsync({ // loads the font 'oswald' (found in assest-folder) and sets the fontLoaded state to true when finished
           'oswald': require('./../assets/fonts/Oswald.ttf'),
         });
         this.setState({ fontLoaded: true });
@@ -205,18 +212,18 @@ export default class HomeScreen extends Component {
       )
     }
       
-      // Flips the state of wheter to show filtering component or not. 
+      // Flips the state of whether to show filtering component or not. 
       ShowHideComponent = () => {
         if (this.state.showFilter === true) {
           this.setState({showFilter : false });
         } else {
           this.setState({ showFilter : true });
         }
-      };
+      }
 
       // Renders a filter component
       filterFunction = () => {
-        // console.log(this.state.fall, this.state.spring, this.state.code, this.state.name)
+        // Here all the filter- and sorting states are sent to the filtering components as props
         return  (
           <View style={styles.filterContainer}>
             <Filter 
@@ -255,6 +262,7 @@ export default class HomeScreen extends Component {
               </Text>: null }
           </View>
            <SearchBar style={styles.searchbar} storeSearch={this.storeSearch} storeFilterState={this.storeFilterState} fetchCourses={this.fetchCourses} setQuery={this.setQuery}/>
+          {/* Only show the filter button if something has been searched */}
            {this.state.query !== "" ? 
               <TouchableOpacity
                 style={styles.button}
@@ -268,6 +276,7 @@ export default class HomeScreen extends Component {
         
             : null}
 
+        {/* Only show filter Component if filter button pressed */}
         {this.state.showFilter ? this.filterFunction() : null}
         </View>
         <ScrollView 
