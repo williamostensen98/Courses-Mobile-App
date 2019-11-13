@@ -241,19 +241,29 @@ export default class HomeScreen extends Component {
               />
           </View> )
       }
+      handleHomePress = () => {
+        this.setQuery('')
+        
+        this.retrieveHistory()
+        this.fetchCourses('', '','','1')
+      }
 
   render() {
  
     return (
       <View style={styles.container}>
         <View style={styles.searchContainer}>
+        <TouchableOpacity onPress={this.handleHomePress}>
           <View style={{flexDirection: "row", alignItems: 'center', justifyContent: "space-between", marginTop: 5}}>
+          
             <Icon name="bar-chart" size={35} color={"#FFCE00"}/> 
             {this.state.fontLoaded ? 
               <Text h1 style={styles.header}>
                 COURSES
               </Text>: null}
+         
           </View>
+          </TouchableOpacity>
           <View style={{flexDirection: "row", alignItems: 'center', justifyContent: "space-between"}}>
             <Icon name="search" size={14} color={"#C0CCD8"} style={{right: 2}}/> 
             {this.state.fontLoaded ? 
