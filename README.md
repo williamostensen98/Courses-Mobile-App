@@ -51,10 +51,10 @@ Dette oppfyller kravet om lagring av data mellom hver gang appen kjører (persis
 Søkehistorikken lagres og hentes ut fra AsyncStorage som en array, og mellomlagres i staten “searchHistory” hver gang, 
 før det mappes til React Native-komponenter som er slik vi ønsker at det skal renderes i appen gjennom `showHistory()`. 
 
-Historikken lagres ved metoden `storeSearch` der det nyligste søket legges fremst i listen av gjennomførte søk (fra searchHistory-staten),
-før det lagres med `AsyncStorage.setItem()`. Søkehistorikken hentes ut ved `retrieveHistory` som bruker `AsyncStorage.getItem()`, 
+Historikken lagres ved metoden `storeSearch()` der det nyligste søket legges fremst i listen av gjennomførte søk (fra searchHistory-staten),
+før det lagres med `AsyncStorage.setItem()`. Søkehistorikken hentes ut ved `retrieveHistory()` som bruker `AsyncStorage.getItem()`, 
 og oppdaterer searchHistory-staten dersom det var noe historikk å hente. Funksjonaliteten for å fjerne all 
-søkehistorikk gjøres ved `clearHistory` som bruker `AsyncStorage.clear()`, og som oppdaterer relevante states til å slette historikk.
+søkehistorikk gjøres ved `clearHistory()` som bruker `AsyncStorage.clear()`, og som oppdaterer relevante states til å slette historikk.
 
 Søkehistorikken er presentert som en liste av knapper som ser ut som tekst. 
 Dette er for å gjøre det ryddigere, da kantene rundt knappene gjorde at det ble utrolig mye støy på skjermen. 
