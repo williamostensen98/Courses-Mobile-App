@@ -39,7 +39,7 @@ noe vi trodde man ikke kunne ved forrige prosjekt. Det endte opp med at det ble 
 som blir sendt ned som props i komponentene under den i hierarkiet. Det ble ikke særlig problematisk, 
 så vi valgte å beholde det selv om det endte opp med mange states. 
  
-Den største jobben har vært at vi måtte bytte ut nærmest alle komponentene våre, da disse i utgangspunktet (i forrige prosjekt) var BootStrap-komponenter. 
+En av de største jobbene har vært at vi måtte bytte ut nærmest alle komponentene våre, da disse i utgangspunktet (i forrige prosjekt) var BootStrap-komponenter. 
 Nå måtte de tilpasses håndholdte enheter og React Native, og da har både utseendemessige og funksjonelle endringer vært nødvendige. 
 Vi har i stor grad brukt komponenter fra React Native, men har også valgt å ta i bruk biblioteket React Native Elements 
 for å gjøre jobben enklere for oss selv da komponentene fra dette biblioteket fungerer fint på tvers av plattformer. 
