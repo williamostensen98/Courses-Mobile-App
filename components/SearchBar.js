@@ -14,6 +14,7 @@ export default function SearchBar(props) {
             autoFocus={true}            // Automatically focuses on the search bar. User does not need to select it before writing
             returnKeyType={'search'}    // Changes the bottom right button on keyboard to "search" instead of "return"
             placeholderTextColor={"#737373"}
+            
         />   
     )
 }

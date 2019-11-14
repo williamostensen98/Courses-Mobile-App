@@ -186,7 +186,7 @@ export default class HomeScreen extends Component {
                           icon= {<Icon name="history" color="#c5c9d4" size={17} style={{right:7}}/>}
                           title={search}
                           titleStyle={{color:'#c5c9d4', textAlign: 'left', fontFamily: 'oswald'}}
-                          onPress={() => this.fetchCourses(search, '','','1').then(this.setQuery(search))}
+                          onPress={() => this.fetchCourses(search, '','','1').then(this.setQuery(search)).then(this.storeFilterState(false,false,false,true))}
                       />)
       }) 
     }
@@ -195,6 +195,7 @@ export default class HomeScreen extends Component {
     //Includes button for clearing search history
     showHistory = () => {
       return ( 
+        <View>
         <View style={{alignItems: 'center', width:'120%', marginTop: 20}}>
            {this.state.fontLoaded ? <Text style={{fontSize: 24, color: '#FFFFFF', fontFamily:'oswald'}}>
             Search history:
@@ -202,12 +203,22 @@ export default class HomeScreen extends Component {
           <View style={{alignItems: 'flex-start', width: Dimensions.get('window').width*0.69, marginTop: 10}}>
             {this.state.mappedHistory}
           </View>
-          {this.state.fontLoaded ? 
-            <Button type="clear" 
-                    titleStyle={{color:'#FFCE00', fontWeight: 'bold', fontSize: 22, fontFamily: 'oswald'}} 
-                    title={"Clear search history"} 
-                    onPress={() => this.clearHistory()}/>
-          : null }
+        
+        </View>
+        <View>
+           {this.state.fontLoaded ? 
+              <TouchableOpacity 
+              style={styles.clearButton} 
+              type="clear"       
+              onPress={() => this.clearHistory()}>
+              {this.state.fontLoaded ? 
+                <Text style={styles.buttonText}>
+                    Clear Search History
+                </Text> : null}
+              </TouchableOpacity>
+            : null }
+
+        </View>
         </View>
       )
     }
@@ -241,19 +252,30 @@ export default class HomeScreen extends Component {
               />
           </View> )
       }
+     
+      handleHomePress = () => {
+        this.setQuery('')
+
+        this.retrieveHistory()
+        this.fetchCourses('', '','','1')
+      }
 
   render() {
  
     return (
       <View style={styles.container}>
         <View style={styles.searchContainer}>
+        <TouchableOpacity onPress={this.handleHomePress}>
           <View style={{flexDirection: "row", alignItems: 'center', justifyContent: "space-between", marginTop: 5}}>
+          
             <Icon name="bar-chart" size={35} color={"#FFCE00"}/> 
             {this.state.fontLoaded ? 
               <Text h1 style={styles.header}>
                 COURSES
               </Text>: null}
+         
           </View>
+          </TouchableOpacity>
           <View style={{flexDirection: "row", alignItems: 'center', justifyContent: "space-between"}}>
             <Icon name="search" size={14} color={"#C0CCD8"} style={{right: 2}}/> 
             {this.state.fontLoaded ? 
@@ -348,7 +370,8 @@ const styles = StyleSheet.create({
       width: "85%",
       borderRadius: 5,
       padding: 5,
-      marginBottom: 20
+      marginBottom: 20,
+      alignSelf: 'center'
     }, 
     buttonText:{
       justifyContent: 'center',
@@ -370,5 +393,13 @@ const styles = StyleSheet.create({
       color: "#C0CCD8",
       fontFamily: 'oswald',
       fontSize: 18,
+    }, 
+    clearButton: {
+      backgroundColor: "#ffce00",
+      width: "85%",
+      borderRadius: 5,
+      padding: 5,
+      marginTop: 20,
+      alignSelf: 'center'
     }
   });
