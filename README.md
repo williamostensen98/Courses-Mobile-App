@@ -3,7 +3,7 @@ IT2810 Prosjekt 4 - Gruppe 39
 
 ## Installering
 
-_Forutsetter at du har installert Expo appen på din smarttelefon og din PC/Mac._
+_Forutsetter at du har installert Expo appen på din smarttelefon og din PC/Mac, samt at du er koblet til NTNU sitt nettverk, enten via Wifi eller VPN._
 
 1. For å kjøre prosjektet må man først kjøre følgende kommando i terminal: 
 
@@ -97,12 +97,12 @@ det enklere for oss selv når vi skulle style komponentene.
 
 
 ### Bruk av Git
-Vi har aktivt brukt Git under dette prosjektet også. Vi brukte igjen branchen `dev` som en midlertidig masterbranch, og tok utgangspunkt i denne når vi skulle merge. 
-Andre brancher ble i starten litt vagt navngitt i forhold til oppgaven den skulle arbeide med, men dette ble mer og mer spesifisert etter hvert. Noen ganger har vi direkte navngitt dem etter issuenummeret den hører til.
+Vi har aktivt brukt Git under dette prosjektet også. Vi brukte igjen branchen `dev` som en default branch, og tok utgangspunkt i denne når vi skulle merge. 
+Andre brancher ble i starten litt vagt navngitt i forhold til oppgaven den skulle arbeide med, men dette ble mer og mer spesifisert etter hvert. De gangene det har vært hensiktsmessig har vi direkte navngitt dem etter issuenummeret den hører til.
 
 I dette prosjektet har vi også forbedret oss til at vi nå tagger issue-nummeret som committen bidrar til i commit-meldingen. 
-Dette gjelder i hovedsak commits der betydelige endringer har blitt gjort, så det er fortsatt en del commits som ikke inkluderer tag da det ikke nødvendigvis er knyttet opp med en spesifikk issue. 
-Vi har også prøvd å close issues i commit-meldinger, men det har til tider blitt glemt å gjøre ved siste commit for et issue, og da har vi bare markert issuet som “Closed” manuelt. 
+Dette gjelder i hovedsak commits der betydelige endringer har blitt gjort, så det er fortsatt en del commits som ikke inkluderer tag da det ikke nødvendigvis er knyttet opp med en spesifikk issue, men heller en liten bugfix eller liten endring som det blir overflødig å opprette en issue på.
+Vi har også prøvd å close issues i commit-meldinger, men det har til tider blitt glemt å gjøre ved siste commit for et issue, og da har vi bare markert issuet som “Closed” manuelt i GitLab.
 
 
 ## Testing
@@ -110,6 +110,8 @@ For å simulere og teste Android har vi brukt ulike AVD-er (Android Virtual Devi
 samt egne enheter ved scan av QR-kode. I Android Studio har vi i hovedsak brukt Pixel 2, og egen enhet er Huawei P20 Pro.
 
 Det samme har vi gjort for iOS, bare med programmet Xcode og simulert på iPhone 11. Egne enheter her har vært iPhone 6 og X. Det ble også gjennomført brukertesting, der vi kjørte applikasjonen på en av gruppemedlemmenes iPhone X.
+
+På både Android og iOS er all funksjonaliteten lik, men vi har lagt merke til at samme fargekode kan gi forskjellige fargenyanser i de to operativsystemene.
 
 Vi har gjennomført manuelle ende-til-ende-tester ved å gjøre søk der vi vet hva resultatsettet skal være, 
 og sjekke og kontrollere at riktige resultater kommer, og at korrekte endringer skjer ved oppdatering av søk. 
