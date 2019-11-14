@@ -5,8 +5,12 @@ IT2810 Prosjekt 4 - Gruppe 39
 
 _Forutsetter at du har installert Expo appen på din smarttelefon og din PC/Mac._
 
-1. For å kjøre prosjektet må man først kjøre følgende kommando i terminal:
-    ```git clone git@gitlab.stud.idi.ntnu.no:IT2810-H19/teams/team-39/prosjekt_4.git ```
+1. For å kjøre prosjektet må man først kjøre følgende kommando i terminal: 
+
+    ```
+    git clone git@gitlab.stud.idi.ntnu.no:IT2810-H19/teams/team-39/prosjekt_4.git  
+    
+    ```
 2. Deretter må man navigere seg inn i mappen prosjekt_4.  
    På Linux/Mac gjøres dette med kommandoen `cd prosjekt_4`.
 3. Skriv inn `npm install` i terminalen
