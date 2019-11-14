@@ -56,6 +56,13 @@ export default class HomeScreen extends Component {
           console.log(err)
         }
       }
+     
+      //Updates the state 'query'
+      setQuery = (q) => {
+        this.setState({
+          query: q
+        })
+      }
 
       // This method stores all states that is sent from the filtering component
       // Since redux is not used in this project we need to store sll states that is needed in children component 
@@ -71,12 +78,26 @@ export default class HomeScreen extends Component {
           name: n
         })
       }
-     
-      //Updates the state 'query'
-      setQuery = (q) => {
-        this.setState({
-          query: q
-        })
+
+      // Renders a filter component
+      filterFunction = () => {
+        // Here all the filter- and sorting states are sent to the filtering components as props
+        return  (
+          <View style={styles.filterContainer}>
+            <Filter 
+              storeFilterState={this.storeFilterState} 
+              fetchCourses={this.fetchCourses} 
+              query={this.state.query} 
+              fall={this.state.fall}
+              spring={this.state.spring}
+              name={this.state.name}
+              code={this.state.code}
+              ordering={this.state.order}
+              filtering={this.state.filter}
+              sorting={this.state.sort}
+
+              />
+          </View> )
       }
     
     // Fetch courses on mount and retrieve search history from AsyncStorage
@@ -132,20 +153,8 @@ export default class HomeScreen extends Component {
       isCloseToBottom({ layoutMeasurement, contentOffset, contentSize }) {   
         return layoutMeasurement.height + contentOffset.y >= contentSize.height - 50;
       }
-    
 
-    //Retrieved search history from AsyncStorage, and puts it in state 'searchHistory' if there is any data
-    retrieveHistory = async () =>{
-      // Query local history
-      AsyncStorage.getItem("searchHistory").then(history => JSON.parse(history))
-        .then(history => {
-          (history == null) ? 
-                this.setState({searchHistory: []}) : this.setState({searchHistory: history})
-          this.mapHistory()
-          }
-      )
-      .catch(err => console.log(err))
-    }
+
     //Stores the user input query in AsyncStorage
     //Does not count empty strings as query
     storeSearch = async (text) => {
@@ -191,6 +200,18 @@ export default class HomeScreen extends Component {
       }) 
     }
 
+    //Retrieved search history from AsyncStorage, and puts it in state 'searchHistory' if there is any data
+    retrieveHistory = async () =>{
+      AsyncStorage.getItem("searchHistory").then(history => JSON.parse(history))
+        .then(history => {
+          (history == null) ? 
+                this.setState({searchHistory: []}) : this.setState({searchHistory: history})
+          this.mapHistory()
+          }
+      )
+      .catch(err => console.log(err))
+    }
+
     //Makes the entire search history view. 
     //Includes button for clearing search history
     showHistory = () => {
@@ -203,26 +224,26 @@ export default class HomeScreen extends Component {
           <View style={{alignItems: 'flex-start', width: Dimensions.get('window').width*0.69, marginTop: 10}}>
             {this.state.mappedHistory}
           </View>
-        
         </View>
-        <View>
-           {this.state.fontLoaded ? 
-              <TouchableOpacity 
-              style={styles.clearButton} 
-              type="clear"       
-              onPress={() => this.clearHistory()}>
-              {this.state.fontLoaded ? 
-                <Text style={styles.buttonText}>
-                    Clear Search History
-                </Text> : null}
-              </TouchableOpacity>
-            : null }
+          <View>
+            {this.state.fontLoaded ? 
+                <TouchableOpacity 
+                style={styles.clearButton} 
+                type="clear"       
+                onPress={() => this.clearHistory()}>
+                {this.state.fontLoaded ? 
+                  <Text style={styles.buttonText}>
+                      Clear Search History
+                  </Text> : null}
+                </TouchableOpacity>
+              : null }
 
-        </View>
+          </View>
         </View>
       )
     }
       
+
       // Flips the state of whether to show filtering component or not. 
       ShowHideComponent = () => {
         if (this.state.showFilter === true) {
@@ -232,33 +253,15 @@ export default class HomeScreen extends Component {
         }
       }
 
-      // Renders a filter component
-      filterFunction = () => {
-        // Here all the filter- and sorting states are sent to the filtering components as props
-        return  (
-          <View style={styles.filterContainer}>
-            <Filter 
-              storeFilterState={this.storeFilterState} 
-              fetchCourses={this.fetchCourses} 
-              query={this.state.query} 
-              fall={this.state.fall}
-              spring={this.state.spring}
-              name={this.state.name}
-              code={this.state.code}
-              ordering={this.state.order}
-              filtering={this.state.filter}
-              sorting={this.state.sort}
-
-              />
-          </View> )
-      }
-     
+    
       handleHomePress = () => {
         this.setQuery('')
 
         this.retrieveHistory()
         this.fetchCourses('', '','','1')
       }
+
+
 
   render() {
  
@@ -344,9 +347,7 @@ const styles = StyleSheet.create({
       fontFamily: 'oswald',
       color: "#C0CCD8",
       fontSize: 14,
-
     },
-
     instructions: {
       textAlign: 'center',
       color: '#333333',
