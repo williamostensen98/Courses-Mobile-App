@@ -3,25 +3,40 @@ IT2810 Prosjekt 4 - Gruppe 39
 
 ## Installering
 
-* For å kjøre prosjektet må man først kjøre følgende kommando i terminal:
-    ```
-    git clone git@gitlab.stud.idi.ntnu.no:IT2810-H19/teams/team-39/prosjekt_4.git
-    ```
-* Deretter må man navigere seg inn i mappen prosjekt_4. 
-  På Linux/Mac gjøres dette med kommandoen `cd prosjekt_4`.
-* Kjør kommandoen `expo start`
-* Det skal automatisk åpne en ny side i nettleseren din med URL localhost:19000
-* Åpne Expo appen på telefonen din, og scann QR-koden
+_Forutsetter at du har installert Expo appen på din smarttelefon og din PC/Mac._
+
+1. For å kjøre prosjektet må man først kjøre følgende kommando i terminal:
+    ```git clone git@gitlab.stud.idi.ntnu.no:IT2810-H19/teams/team-39/prosjekt_4.git ```
+2. Deretter må man navigere seg inn i mappen prosjekt_4.  
+   På Linux/Mac gjøres dette med kommandoen `cd prosjekt_4`.
+3. Skriv inn `npm install` i terminalen
+4. Kjør kommandoen `expo start`
+5. Det skal automatisk åpne en ny side i nettleseren din med URL localhost:19000
+6. **For Android**: Åpne Expo appen på telefonen din, og scann QR-koden  
+   **For iOS**: Scann QR-koden med valgfritt kamera, og trykk på “Åpne i Expo” når denne varslen dukker opp.
+
 
 
 
 ## Innhold og funksjonalitet
 
-Prosjekt 4 er å lage en søkeapplikasjon med noenlunde lik funksjonalitet som i prosjekt 3; brukerbestemte søk med dynamisk lasting av treff, støtte for sortering og filtrering, listebasert visning av resultater med muligheter for detaljert visning av hvert listeelement. Vi har valgt å benytte oss av samme backend som i prosjekt 3, og har dermed gjenbrukt alt derfra uten å gjøre noen som helst endringer på koden.
+Prosjekt 4 er å lage en søkeapplikasjon med noenlunde lik funksjonalitet som i prosjekt 3; 
+brukerbestemte søk med dynamisk lasting av treff, støtte for sortering og filtrering, 
+listebasert visning av resultater med muligheter for detaljert visning av hvert listeelement. 
+Vi har valgt å benytte oss av samme backend som i prosjekt 3, 
+og har dermed gjenbrukt alt derfra uten å gjøre noen som helst endringer på koden.
 
-Vi har forsøkt å lage appen så lik den tilhørende nettsiden som mulig. Vi har oppfylt alle kravene som oppgavebeskrivelsen gir, og har bevisst valgt å ikke implementere all funksjonalitet fra nettsiden. I hovedsak er det funksjonaliteten for å gi reviews av fag og avansert visning av karakterer vi har utelatt. 
+Vi har forsøkt å lage appen så lik den tilhørende nettsiden som mulig. 
+Vi har oppfylt alle kravene som oppgavebeskrivelsen gir, og har bevisst valgt å ikke implementere 
+all funksjonalitet fra nettsiden. I hovedsak er det funksjonaliteten for å gi 
+reviews av fag og avansert visning av karakterer vi har utelatt. 
 
-Noe ny funksjonalitet som er i appen, men ikke på nettsiden er søkehistorikk som lagres persistent mellom bruk. Søkehistorikken - gitt at brukeren har brukt appen før og det eksisterer en historikk, presenteres for brukeren idet appen åpnes. Dersom man forsøker å søke uten å ha skrevet inn noe i søkefeltet vil det også vises. Her kan brukeren i tillegg trykke på et tidligere søk for å gjennomføre søket på nytt, eller slette all søkehistorikk.
+Noe ny funksjonalitet som er i appen, men ikke på nettsiden 
+er søkehistorikk som lagres persistent mellom bruk. Søkehistorikken - 
+gitt at brukeren har brukt appen før og det eksisterer en historikk, presenteres 
+for brukeren idet appen åpnes. Dersom man legger inn et tomt søk eller trykker på “Courses”-logoen 
+vil det også vises. Her kan brukeren i tillegg trykke på et tidligere søk for å gjennomføre 
+søket på nytt, eller velge slette all søkehistorikk.
 
 ## Bruk av teknologi
 
@@ -43,6 +58,8 @@ En av de største jobbene har vært at vi måtte bytte ut nærmest alle komponen
 Nå måtte de tilpasses håndholdte enheter og React Native, og da har både utseendemessige og funksjonelle endringer vært nødvendige. 
 Vi har i stor grad brukt komponenter fra React Native, men har også valgt å ta i bruk biblioteket React Native Elements 
 for å gjøre jobben enklere for oss selv da komponentene fra dette biblioteket fungerer fint på tvers av plattformer. 
+Mye av selve logikken og ikke minst stylingen fra forrige prosjekt er også gjenbrukt i dette prosjektet, 
+men det har krevet litt forandringer grunnet annen form for håndtering av state i dette prosjektet. 
 
 
 ### AsyncStorage
@@ -66,14 +83,16 @@ Funksjonalitetens synlighet er tilgjengelig ved ikonet (klokke med en pil som g�
 ## Bruk av git, kommentering av kode og kodekvalitet
 
 ### Styling
-Vi har benyttet både inline styling og React Natives StyleSheet. Der vi hadde tiltenkt at det skulle bli gjenbruk av komponentstyle valgte vi å inkludere i Stylesheet, og der vi så det hensiktsmessig brukte vi inline styling. 
+Når det kommer til styling har vi valgt å bruke både React Natives StyleSheet, 
+samt inline i komponenter. Grunnen til dette er fordi vi ikke ville at 
+koden skulle bli veldig lang med ekstensiv CSS. Derfor er det brukt 
+StyleSheet på de komponentene der det blir brukt samme style, og inline styling på de 
+komponentene som bare bruker egen styling og dermed ikke behøver gjenbrukt noen steder. 
+Dette kan bli litt rotete noen steder, men vi så det som hensiktsmessig for å gjøre 
+det enklere for oss selv når vi skulle style komponentene.
 
-Hver komponent som bruker fonten Oswald, altså hver komponent med skrift, må sjekke at fontLoaded === true før den kan renderes.
 
- 
-Noe inline og noe er i stylesheet. litt rotete kanskje? snakke litt om det
-
-#### Bruk av Git
+### Bruk av Git
 Vi har aktivt brukt Git under dette prosjektet også. Vi brukte igjen branchen `dev` som en midlertidig masterbranch, og tok utgangspunkt i denne når vi skulle merge. 
 Andre brancher ble i starten litt vagt navngitt i forhold til oppgaven den skulle arbeide med, men dette ble mer og mer spesifisert etter hvert. Noen ganger har vi direkte navngitt dem etter issuenummeret den hører til.
 
@@ -86,13 +105,16 @@ Vi har også prøvd å close issues i commit-meldinger, men det har til tider bl
 For å simulere og teste Android har vi brukt ulike AVD-er (Android Virtual Devices) som er tilgjengelig på Android Studio, 
 samt egne enheter ved scan av QR-kode. I Android Studio har vi i hovedsak brukt Pixel 2, og egen enhet er Huawei P20 Pro.
 
-Det samme har vi gjort for iOS, bare med programmet Xcode og simulert på iPhone 11. Egne enheter her har vært iPhone 6 og X.
+Det samme har vi gjort for iOS, bare med programmet Xcode og simulert på iPhone 11. Egne enheter her har vært iPhone 6 og X. Det ble også gjennomført brukertesting, der vi kjørte applikasjonen på en av gruppemedlemmenes iPhone X.
 
 Vi har gjennomført manuelle ende-til-ende-tester ved å gjøre søk der vi vet hva resultatsettet skal være, 
-og sjekke og kontrollere at riktige resultater kommer, og korrekte endringer skjer ved endring. 
+og sjekke og kontrollere at riktige resultater kommer, og at korrekte endringer skjer ved oppdatering av søk. 
+
 
 
 ## Andre kilder
-https://react-native-elements.github.io/react-native-elements/
-https://facebook.github.io/react-native/
-https://medium.com/building-with-react-native/what-is-asyncstorage-in-react-native-and-how-you-to-use-it-with-app-state-manager-1x09-b8c636ce5f6e
+* https://react-native-elements.github.io/react-native-elements/  
+* https://facebook.github.io/react-native/  
+* https://medium.com/building-with-react-native/what-is-asyncstorage-in-react-native-and-how-you-to-use-it-with-app-state-manager-1x09-b8c636ce5f6e
+* https://react-native-elements.github.io/react-native-elements/docs/icon.html
+
